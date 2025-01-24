@@ -26,14 +26,38 @@ class Client extends Model
     ];
 
     public const STATUS_MESSAGES = [
-        'pending' => 'В ожидании',
-        'payment_initiated' => 'Платеж создан',
-        'payment_initiation_problem' => 'Проблема создания платежа',
-        'payment_executed' => 'Платеж выполнен',
-        'payment_in_process' => 'Платеж в процессе',
-        'payment_closed' => 'Платеж проведен',
-        'payment_cancelled' => 'Платеж отменен',
-        'not_found' => 'Платеж не найден'
+        'pending' => [
+          'color' => 'bg-gray-100',
+          'text' =>  'В ожидании'
+        ],
+        'payment_initiated' => [
+            'color' => 'bg-gray-100',
+            'text' =>  'Платеж создан'
+        ],
+        'payment_initiation_problem' => [
+            'color' => 'bg-red-400',
+            'text' =>  'Проблема создания платежа'
+        ],
+        'payment_executed' => [
+            'color' => 'bg-gray-300',
+            'text' =>  'Платеж выполнен'
+        ],
+        'payment_in_process' => [
+            'color' => 'bg-blue-100',
+            'text' =>  'Платеж в процессе'
+        ],
+        'payment_closed' => [
+            'color' => 'bg-green-300',
+            'text' =>  'Платеж проведен'
+        ],
+        'payment_cancelled' => [
+            'color' => 'bg-red-400',
+            'text' =>  'Платеж отменен'
+        ],
+        'not_found' => [
+            'color' => 'bg-red-400',
+            'text' =>  'Платеж не найден'
+        ],
     ];
 
 }

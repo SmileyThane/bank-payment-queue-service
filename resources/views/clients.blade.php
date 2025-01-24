@@ -1,3 +1,4 @@
+@php use App\Models\Client; @endphp
 @extends('layouts.app')
 
 @section('content')
@@ -10,7 +11,8 @@
                 <div class="flex justify-between items-center mt-2">
                     <div>
                         <p class="text-sm text-gray-600">Детали о загруженных клиентах отображены ниже</p>
-                        <p class="text-sm text-gray-600">Актуальный баланс: <strong class="text-black">{{ $balance }}</strong></p>
+                        <p class="text-sm text-gray-600">Актуальный баланс: <strong
+                                class="text-black">{{ $balance }}</strong></p>
                     </div>
                     <div>
                         @if($isExecuted)
@@ -18,12 +20,16 @@
                         @elseif($outstandingAmount > $balance)
                             <p class="text-sm text-red-700">Недостаточно средств.</p>
                         @else
-                            <form action="{{ route('initPayment', ['hash' => $hash]) }}" method="get" class="inline-block">
+                            <form action="{{ route('initPayment', ['hash' => $hash]) }}" method="get"
+                                  class="inline-block">
                                 <div class="mb-2">
                                     <label for="payment_comment" class="block text-sm font-medium text-gray-700 mb-2">Комментарий</label>
-                                    <input name="payment_comment" id="payment_comment" class="block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 text-sm" required>
+                                    <input name="payment_comment" id="payment_comment"
+                                           class="block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 text-sm"
+                                           required>
                                 </div>
-                                <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-blue-700 focus:outline-none focus:ring focus:ring-blue-300">
+                                <button type="submit"
+                                        class="bg-blue-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-blue-700 focus:outline-none focus:ring focus:ring-blue-300">
                                     <i class="bi bi-upload"></i> Оплатить
                                 </button>
                             </form>
@@ -54,17 +60,20 @@
                                 <td class="px-4 py-2 text-sm font-medium text-gray-900">{{ $client->surname }}</td>
                                 <td class="px-4 py-2 text-sm text-gray-700">{{ $client->patronymic }}</td>
                                 <td class="px-4 py-2">
-                                    <span class="inline-block bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-xs font-medium shadow-sm">{{ $client->card_number }}</span>
+                                    <span
+                                        class="inline-block bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-xs font-medium shadow-sm">{{ $client->card_number }}</span>
                                 </td>
-                                <td class="px-4 py-2 text-sm text-gray-700">{{ $client->amount }}</td>
+                                <td class="px-4 py-2 text-sm text-gray-700 text-end">{{ $client->amount }}</td>
                                 <td class="px-4 py-2">
-                                    <span class="inline-block px-3 py-1 rounded-full text-xs font-medium shadow-sm {{ $client->status === 'Active' ? 'bg-green-100 text-green-700' : 'bg-gray-300 text-gray-700' }}">
-                                        {{ \App\Models\Client::STATUS_MESSAGES[$client->status] }}
+                                    <span
+                                        class="inline-block px-3 py-1 {{Client::STATUS_MESSAGES[$client->status]['color']}} rounded-full text-xs font-medium shadow-sm">
+                                        {{ Client::STATUS_MESSAGES[$client->status]['text'] }}
                                     </span>
                                 </td>
                                 <td class="px-4 py-2">
                                     @if(!json_validate($client->status_description))
-                                        <span class="inline-block px-3 py-1 rounded-full text-xs font-medium shadow-sm bg-gray-100 text-gray-900">
+                                        <span
+                                            class="inline-block px-3 py-1 rounded-full text-xs font-medium shadow-sm bg-gray-100 text-gray-900">
                                             {{ $client->status_description }}
                                         </span>
                                     @endif
