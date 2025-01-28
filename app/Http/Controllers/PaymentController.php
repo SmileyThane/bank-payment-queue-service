@@ -51,6 +51,39 @@ class PaymentController extends Controller
         return 0;
     }
 
+    final public function getVirtualActualBalance(string $beneficiaryId, string $virtualAccountId): float
+    {
+        if (!Cache::has('access_token')) {
+            $this->authorize();
+        }
+
+        $curl = curl_init();
+
+        curl_setopt_array($curl, array(
+            CURLOPT_URL => 'https://api-gate.vestabankdev.ru/release/api/nominalaccounts-service/v2/partner/accounts/' . env('BANK_ACCOUNT_NUMBER') . '/beneficiaries/' . $beneficiaryId . '/virtual-accounts/' . $virtualAccountId,
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_ENCODING => '',
+            CURLOPT_MAXREDIRS => 10,
+            CURLOPT_TIMEOUT => 0,
+            CURLOPT_FOLLOWLOCATION => true,
+            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+            CURLOPT_CUSTOMREQUEST => 'GET',
+            CURLOPT_HTTPHEADER => array(
+                'Authorization: Bearer ' . Cache::get('access_token')
+            ),
+        ));
+
+        $response = curl_exec($curl);
+
+        $result = json_decode($response, true);
+
+        if ($result && $result['isSuccess'] === true && isset($result['value']['virtualAccount'])) {
+            return $result['value']['virtualAccount']['availableFunds'];
+        }
+
+        return 0;
+    }
+
     /**
      * @throws JsonException
      */
