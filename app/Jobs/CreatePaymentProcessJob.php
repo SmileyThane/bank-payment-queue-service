@@ -11,15 +11,18 @@ class CreatePaymentProcessJob implements ShouldQueue
     use Queueable;
 
     private $clients;
-    private string $payment_comment;
+    private string $paymentComment;
+
+    private string $virtualAccountId;
 
     /**
      * Create a new job instance.
      */
-    public function __construct($clients, string $payment_comment)
+    public function __construct($clients, $virtualAccountId, string $paymentComment)
     {
         $this->clients = $clients;
-        $this->payment_comment = $payment_comment;
+        $this->paymentComment = $paymentComment;
+        $this->virtualAccountId = $virtualAccountId;
     }
 
     /**
@@ -27,6 +30,6 @@ class CreatePaymentProcessJob implements ShouldQueue
      */
     final public function handle(): void
     {
-        (new PaymentController())->initPaymentProcess($this->clients, $this->payment_comment);
+        (new PaymentController())->initPaymentProcess($this->clients, $this->virtualAccountId, $this->paymentComment);
     }
 }
