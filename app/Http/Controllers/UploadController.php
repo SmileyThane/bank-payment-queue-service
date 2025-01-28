@@ -21,6 +21,7 @@ class UploadController extends Controller
         $fileName = $file->getClientOriginalName();
         $filePath = $file->store('uploads');
         $outstandingAmount = 0;
+        $virtualAccount = json_decode($request->virtual_account, true);
 
         $hash = Str::uuid();
         $data = Excel::toCollection(null, $file);
@@ -28,6 +29,8 @@ class UploadController extends Controller
             'file_name' => $fileName,
             'file_path' => $filePath,
             'hash' => $hash,
+            'beneficiary_id' => $virtualAccount['beneficiaryId'],
+            'virtual_account_id' => $virtualAccount['accountNumber'],
             'reference_id' => $referenceId,
         ]);
 
@@ -55,9 +58,12 @@ class UploadController extends Controller
 
     final public function index(): View
     {
+        $paymentController = new PaymentController();
         $uploads = Upload::all();
-        $balance = (new PaymentController())->getActualBalance();
-        return view('home', compact('balance', 'uploads'));
+        $balance = $paymentController->getActualBalance();
+        $accounts = $paymentController->getVirtualAccountsList();
+
+        return view('home', compact('balance', 'uploads', 'accounts'));
     }
 }
 
