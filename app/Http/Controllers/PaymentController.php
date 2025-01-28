@@ -298,6 +298,11 @@ class PaymentController extends Controller
 
     public function getDeal(string $dealId): array|null
     {
+
+        if (!Cache::has('access_token')) {
+            $this->authorize();
+        }
+
         $curl = curl_init();
         curl_setopt_array($curl, array(
             CURLOPT_URL => 'https://api-gate.vestabankdev.ru/release/api/nominalaccounts-service/v2/partner/accounts/' . env('BANK_ACCOUNT_NUMBER') . '/deals/' . $dealId,
