@@ -35,7 +35,7 @@ class Client extends Model
             'text' =>  'Платеж создан'
         ],
         'payment_initiation_problem' => [
-            'color' => 'bg-red-400',
+            'color' => 'bg-danger',
             'text' =>  'Проблема создания платежа'
         ],
         'payment_executed' => [
@@ -51,11 +51,11 @@ class Client extends Model
             'text' =>  'Платеж проведен'
         ],
         'payment_cancelled' => [
-            'color' => 'bg-red-400',
+            'color' => 'bg-danger',
             'text' =>  'Платеж отменен'
         ],
         'not_found' => [
-            'color' => 'bg-red-400',
+            'color' => 'bg-danger',
             'text' =>  'Платеж не найден'
         ],
     ];
