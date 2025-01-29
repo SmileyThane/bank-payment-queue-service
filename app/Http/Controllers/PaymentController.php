@@ -285,7 +285,7 @@ class PaymentController extends Controller
 
                 }
 
-                if ($deal['status'] === 'Rejected' || $deal['status'] === 'Сorrection') {
+                if ($deal['status'] === 'Rejected' || $deal['status'] === 'Correction') {
                     $client->status = Client::STATUSES[6];
                 }
             } else {
