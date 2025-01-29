@@ -132,7 +132,7 @@ class PaymentController extends Controller
         return redirect()->back();
     }
 
-    public function initPaymentProcess($clients, string $virtualAccountId, string $paymentComment): void
+    public function initPaymentProcess($clients, string $virtualAccountId, string $paymentComment = null): void
     {
         foreach ($clients as $client) {
             $purpose = ($paymentComment ?? 'Отправка на карту. ') . $client->name . ' ' . $client->surname;
