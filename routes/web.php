@@ -12,9 +12,15 @@ Route::middleware('auth')->group(function () {
     Route::get('/upload/{hash}', [ClientController::class, 'showByHash'])->name('clients');
     Route::get('/upload/{hash}/pay', [PaymentController::class, 'initPayment'])->name('initPayment');
 
-    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
-    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
-    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+//    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+//    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+//    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+
+    Route::delete('/beneficiary/{beneficiaryId}/activate', [PaymentController::class, 'activateBeneficiary'])->name('activateBeneficiary');
+    Route::get('/beneficiary/create', function () {
+        return view('beneficiaries.create');
+    })->name('beneficiary.create');
+    Route::post('/beneficiary', [PaymentController::class, 'createBeneficiary'])->name('beneficiary.store');
 });
 
 require __DIR__.'/auth.php';
