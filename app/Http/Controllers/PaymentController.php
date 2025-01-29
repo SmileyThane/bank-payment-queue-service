@@ -366,6 +366,55 @@ class PaymentController extends Controller
             $this->authorize();
         }
 
+        if ($request->type === 'business') {
+            $result = $this->createBeneficearyBusinessProcess($request);
+        } else {
+            $result = $this->createBeneficearyPersonalProcess($request);
+        }
+
+//        TODO: add validation errors
+//        if ($result && $result['isSuccess'] === true) {
+//            return redirect()->route('upload');
+//        }
+
+        return redirect()->route('upload');
+    }
+
+    private function createBeneficearyBusinessProcess(Request $request)
+    {
+        $curl = curl_init();
+        curl_setopt_array($curl, array(
+            CURLOPT_URL => 'https://api-gate.vestabankdev.ru/release/api/nominalaccounts-service/v2/partner/accounts/' . env('BANK_ACCOUNT_NUMBER') . '/beneficiaries/createLegalAndVirtualAccount',
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_ENCODING => '',
+            CURLOPT_MAXREDIRS => 10,
+            CURLOPT_TIMEOUT => 0,
+            CURLOPT_FOLLOWLOCATION => true,
+            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+            CURLOPT_CUSTOMREQUEST => 'POST',
+            CURLOPT_POSTFIELDS => '{
+                                        "inn": "' . $request->inn . '",
+                                        "accountType": "Standard",
+                                        "beneficiaryData": {
+                                            "kpp": "' . $request->kpp . '",
+                                            "name": "' . $request->name . '"
+                                        }
+                                    }',
+            CURLOPT_HTTPHEADER => array(
+                'Content-Type: application/json',
+                'Authorization: Bearer ' . Cache::get('access_token')
+            ),
+        ));
+
+        curl_close($curl);
+        $response = curl_exec($curl);
+        $result = json_decode($response, true);
+
+        return $result;
+    }
+
+    private function createBeneficearyPersonalProcess(Request $request)
+    {
         $curl = curl_init();
         curl_setopt_array($curl, array(
             CURLOPT_URL => 'https://api-gate.vestabankdev.ru/release/api/nominalaccounts-service/v2/partner/accounts/' . env('BANK_ACCOUNT_NUMBER') . '/beneficiaries/createPhysicalAndVirtualAccount',
@@ -406,11 +455,7 @@ class PaymentController extends Controller
         $response = curl_exec($curl);
         $result = json_decode($response, true);
 
-        if ($result && $result['isSuccess'] === true) {
-            return redirect()->route('upload');
-        }
-
-        return null;
+        return $result;
     }
 
     public function getBeneficiary(string $beneficiaryId)
