@@ -372,6 +372,7 @@ class PaymentController extends Controller
             $result = $this->createBeneficearyPersonalProcess($request);
         }
 
+        dd($result);
 //        TODO: add validation errors
 //        if ($result && $result['isSuccess'] === true) {
 //            return redirect()->route('upload');
@@ -383,6 +384,16 @@ class PaymentController extends Controller
     private function createBeneficearyBusinessProcess(Request $request)
     {
         $curl = curl_init();
+
+        $jsonString = json_encode([
+            "inn" => $request->inn,
+            "name" => "Standard",
+            "beneficiaryData" => [
+                "kpp" => $request->kpp,
+                "name" => $request->name,
+            ],
+        ], JSON_UNESCAPED_UNICODE);
+
         curl_setopt_array($curl, array(
             CURLOPT_URL => 'https://api-gate.vestabankdev.ru/release/api/nominalaccounts-service/v2/partner/accounts/' . env('BANK_ACCOUNT_NUMBER') . '/beneficiaries/createLegalAndVirtualAccount',
             CURLOPT_RETURNTRANSFER => true,
@@ -392,14 +403,7 @@ class PaymentController extends Controller
             CURLOPT_FOLLOWLOCATION => true,
             CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
             CURLOPT_CUSTOMREQUEST => 'POST',
-            CURLOPT_POSTFIELDS => '{
-                                        "inn": "' . $request->inn . '",
-                                        "accountType": "Standard",
-                                        "beneficiaryData": {
-                                            "kpp": "' . $request->kpp . '",
-                                            "name": "' . $request->name . '"
-                                        }
-                                    }',
+            CURLOPT_POSTFIELDS => $jsonString,
             CURLOPT_HTTPHEADER => array(
                 'Content-Type: application/json',
                 'Authorization: Bearer ' . Cache::get('access_token')
