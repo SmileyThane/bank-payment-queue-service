@@ -25,17 +25,29 @@
                         <p class="text-sm text-gray-600">ID бенефициара:
                             <strong class="text-black">{{ $upload['beneficiary_id'] }}</strong>
                         </p>
-                        <p class="text-sm text-gray-600">ФИО бенефициара:
-                            <strong class="text-black">{{ $beneficiary['data']['lastName'] }} {{ $beneficiary['data']['firstName'] }} {{ $beneficiary['data']['middleName'] }}</strong>
-                        </p>
-                        <p class="text-sm text-gray-600">Еmail бенефициара:
-                            <strong class="text-black">{{ $beneficiary['data']['email'] }}</strong>
-                        </p>
 
+                        <p class="text-sm text-gray-600">ИНН бенефициара:
+                            <strong class="text-black">{{ $beneficiary['inn'] }}</strong>
+                        </p>
+                        @if(isset($beneficiary['data']['name']))
+                            <p class="text-sm text-gray-600">Наименование бенефициара:
+                                <strong class="text-black">{{ $beneficiary['data']['name'] }}</strong>
+                            </p>
+                        @else
+                            <p class="text-sm text-gray-600">Наименование бенефициара:
+                                <strong
+                                    class="text-black">{{ $beneficiary['data']['lastName'] }} {{ $beneficiary['data']['firstName'] }} {{ $beneficiary['data']['middleName'] }}</strong>
+                            </p>
+                        @endif
+                        @if(isset($beneficiary['data']['email']))
+                            <p class="text-sm text-gray-600">Еmail бенефициара:
+                                <strong class="text-black">{{ $beneficiary['data']['email'] }}</strong>
+                            </p>
+                        @endif
                         <p class="text-sm text-gray-600">ID виртуального аккаунта: <strong
-                                    class="text-black">{{ $upload->virtual_account_id }}</strong></p>
+                                class="text-black">{{ $upload->virtual_account_id }}</strong></p>
                         <p class="text-sm text-gray-600">Актуальный баланс: <strong
-                                    class="text-black">{{ $balance }}</strong></p>
+                                class="text-black">{{ $balance }}</strong></p>
                     </div>
                     <div>
                         @if($isExecuted)
@@ -85,19 +97,19 @@
                                 <td class="px-4 py-2 text-sm text-gray-700">{{ $client->patronymic }}</td>
                                 <td class="px-4 py-2">
                                     <span
-                                            class="inline-block bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-xs font-medium shadow-sm">{{ $client->card_number }}</span>
+                                        class="inline-block bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-xs font-medium shadow-sm">{{ $client->card_number }}</span>
                                 </td>
                                 <td class="px-4 py-2 text-sm text-gray-700 text-end">{{ $client->amount }}</td>
                                 <td class="px-4 py-2">
                                     <span
-                                            class="inline-block px-3 py-1 {{Client::STATUS_MESSAGES[$client->status]['color']}} rounded-full text-xs font-medium shadow-sm">
+                                        class="inline-block px-3 py-1 {{Client::STATUS_MESSAGES[$client->status]['color']}} rounded-full text-xs font-medium shadow-sm">
                                         {{ Client::STATUS_MESSAGES[$client->status]['text'] }}
                                     </span>
                                 </td>
                                 <td class="px-4 py-2">
                                     @if(!json_validate($client->status_description))
                                         <span
-                                                class="inline-block px-3 py-1 rounded-full text-xs font-medium shadow-sm bg-gray-100 text-gray-900">
+                                            class="inline-block px-3 py-1 rounded-full text-xs font-medium shadow-sm bg-gray-100 text-gray-900">
                                             {{ $client->status_description }}
                                         </span>
                                     @endif
