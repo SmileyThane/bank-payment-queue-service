@@ -17,9 +17,15 @@ Route::middleware('auth')->group(function () {
 //    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
     Route::delete('/beneficiary/{beneficiaryId}/activate', [PaymentController::class, 'activateBeneficiary'])->name('activateBeneficiary');
+
     Route::get('/beneficiary/create', function () {
         return view('beneficiaries.create');
     })->name('beneficiary.create');
+
+    Route::get('/beneficiary/create-business', function () {
+        return view('beneficiaries.create-business');
+    })->name('beneficiary.create-business');
+
     Route::post('/beneficiary', [PaymentController::class, 'createBeneficiary'])->name('beneficiary.store');
 });
 
