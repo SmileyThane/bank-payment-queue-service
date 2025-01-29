@@ -18,7 +18,7 @@ class CreatePaymentProcessJob implements ShouldQueue
     /**
      * Create a new job instance.
      */
-    public function __construct($clients, $virtualAccountId, string $paymentComment)
+    public function __construct($clients, $virtualAccountId, string $paymentComment = '')
     {
         $this->clients = $clients;
         $this->paymentComment = $paymentComment;
