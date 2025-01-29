@@ -11,7 +11,7 @@
                 <div class="flex justify-between items-center mt-2">
                     <div>
                         <div class="mb-3">
-                            @if(!$beneficiary['isActive'])
+                            @if(isset($beneficiary['isActive']) && $beneficiary['isActive'] === false)
                                 <a href="{{ route('activateBeneficiary', ['beneficiaryId' => $beneficiary['id']]) }}"
                                    class="bg-blue-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-blue-700 focus:outline-none focus:ring focus:ring-blue-300">
                                     <i class="bi bi-upload"></i>
