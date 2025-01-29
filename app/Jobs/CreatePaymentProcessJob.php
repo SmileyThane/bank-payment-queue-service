@@ -11,17 +11,17 @@ class CreatePaymentProcessJob implements ShouldQueue
     use Queueable;
 
     private $clients;
-    private string $paymentComment;
+    private $paymentComment;
 
     private string $virtualAccountId;
 
     /**
      * Create a new job instance.
      */
-    public function __construct($clients, $virtualAccountId, string $paymentComment = null)
+    public function __construct($clients, $virtualAccountId, $paymentComment = null)
     {
         $this->clients = $clients;
-        $this->paymentComment = $paymentComment ?? null;
+        $this->paymentComment = $paymentComment;
         $this->virtualAccountId = $virtualAccountId;
     }
 

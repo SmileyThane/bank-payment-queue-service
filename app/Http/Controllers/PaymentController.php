@@ -125,14 +125,14 @@ class PaymentController extends Controller
         if ($upload) {
             $clients = Client::query()->where('upload_id', $upload->id)->get();
             CreatePaymentProcessJob::dispatch($clients, $upload->virtual_account_id, $request->payment_comment);
-            $upload->is_executed = 1;
+            $upload->is_executed = 0;
             $upload->save();
         }
 
         return redirect()->back();
     }
 
-    public function initPaymentProcess($clients, string $virtualAccountId, string $paymentComment = null): void
+    public function initPaymentProcess($clients, string $virtualAccountId, $paymentComment = null): void
     {
         foreach ($clients as $client) {
             $purpose = ($paymentComment ?? 'Отправка на карту. ') . $client->name . ' ' . $client->surname;
