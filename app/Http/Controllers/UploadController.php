@@ -59,7 +59,7 @@ class UploadController extends Controller
     final public function index(): View
     {
         $paymentController = new PaymentController();
-        $uploads = Upload::all();
+        $uploads = Upload::query()->orderByDesc('id')->get();
         $balance = $paymentController->getActualBalance();
         $accounts = $paymentController->getVirtualAccountsList();
 
