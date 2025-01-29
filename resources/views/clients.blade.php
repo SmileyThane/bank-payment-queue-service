@@ -10,40 +10,41 @@
                 <h3 class="text-lg font-semibold text-blue-600">Клиенты</h3>
                 <div class="flex justify-between items-center mt-2">
                     <div>
-                        <div class="mb-3">
-                            @if(isset($beneficiary['isActive']) && $beneficiary['isActive'] === false)
-                                <a href="{{ route('activateBeneficiary', ['beneficiaryId' => $beneficiary['id']]) }}"
-                                   class="bg-blue-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-blue-700 focus:outline-none focus:ring focus:ring-blue-300">
-                                    <i class="bi bi-upload"></i>
-                                    Активировать
-                                </a>
+                        @if(isset($beneficiary))
+                            <div class="mb-3">
+                                @if(isset($beneficiary['isActive']) && $beneficiary['isActive'] === false)
+                                    <a href="{{ route('activateBeneficiary', ['beneficiaryId' => $beneficiary['id']]) }}"
+                                       class="bg-blue-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-blue-700 focus:outline-none focus:ring focus:ring-blue-300">
+                                        <i class="bi bi-upload"></i>
+                                        Активировать
+                                    </a>
+                                @endif
+                            </div>
+                            <p class="text-sm text-gray-600">Бенефициар активирован:
+                                <strong class="text-black">{{ $beneficiary['isActive'] ? 'Да' : 'Нет' }}</strong>
+                            </p>
+                            <p class="text-sm text-gray-600">ИНН бенефициара:
+                                <strong class="text-black">{{ $beneficiary['inn'] }}</strong>
+                            </p>
+                            @if(isset($beneficiary['data']['name']))
+                                <p class="text-sm text-gray-600">Наименование бенефициара:
+                                    <strong class="text-black">{{ $beneficiary['data']['name'] }}</strong>
+                                </p>
+                            @else
+                                <p class="text-sm text-gray-600">Наименование бенефициара:
+                                    <strong
+                                        class="text-black">{{ $beneficiary['data']['lastName'] }} {{ $beneficiary['data']['firstName'] }} {{ $beneficiary['data']['middleName'] }}</strong>
+                                </p>
                             @endif
-                        </div>
-                        <p class="text-sm text-gray-600">Бенефициар активирован:
-                            <strong class="text-black">{{ $beneficiary['isActive'] ? 'Да' : 'Нет' }}</strong>
-                        </p>
+                            @if(isset($beneficiary['data']['email']))
+                                <p class="text-sm text-gray-600">Еmail бенефициара:
+                                    <strong class="text-black">{{ $beneficiary['data']['email'] }}</strong>
+                                </p>
+                            @endif
+                        @endif
                         <p class="text-sm text-gray-600">ID бенефициара:
                             <strong class="text-black">{{ $upload['beneficiary_id'] }}</strong>
                         </p>
-
-                        <p class="text-sm text-gray-600">ИНН бенефициара:
-                            <strong class="text-black">{{ $beneficiary['inn'] }}</strong>
-                        </p>
-                        @if(isset($beneficiary['data']['name']))
-                            <p class="text-sm text-gray-600">Наименование бенефициара:
-                                <strong class="text-black">{{ $beneficiary['data']['name'] }}</strong>
-                            </p>
-                        @else
-                            <p class="text-sm text-gray-600">Наименование бенефициара:
-                                <strong
-                                    class="text-black">{{ $beneficiary['data']['lastName'] }} {{ $beneficiary['data']['firstName'] }} {{ $beneficiary['data']['middleName'] }}</strong>
-                            </p>
-                        @endif
-                        @if(isset($beneficiary['data']['email']))
-                            <p class="text-sm text-gray-600">Еmail бенефициара:
-                                <strong class="text-black">{{ $beneficiary['data']['email'] }}</strong>
-                            </p>
-                        @endif
                         <p class="text-sm text-gray-600">ID виртуального аккаунта: <strong
                                 class="text-black">{{ $upload->virtual_account_id }}</strong></p>
                         <p class="text-sm text-gray-600">Актуальный баланс: <strong
@@ -96,22 +97,22 @@
                                 <td class="px-4 py-2 text-sm font-medium text-gray-900">{{ $client->surname }}</td>
                                 <td class="px-4 py-2 text-sm text-gray-700">{{ $client->patronymic }}</td>
                                 <td class="px-4 py-2">
-                                    <span
-                                        class="inline-block bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-xs font-medium shadow-sm">{{ $client->card_number }}</span>
+                <span
+                    class="inline-block bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-xs font-medium shadow-sm">{{ $client->card_number }}</span>
                                 </td>
                                 <td class="px-4 py-2 text-sm text-gray-700 text-end">{{ $client->amount }}</td>
                                 <td class="px-4 py-2">
-                                    <span
-                                        class="inline-block px-3 py-1 {{Client::STATUS_MESSAGES[$client->status]['color']}} rounded-full text-xs font-medium shadow-sm">
-                                        {{ Client::STATUS_MESSAGES[$client->status]['text'] }}
-                                    </span>
+                <span
+                    class="inline-block px-3 py-1 {{Client::STATUS_MESSAGES[$client->status]['color']}} rounded-full text-xs font-medium shadow-sm">
+                    {{ Client::STATUS_MESSAGES[$client->status]['text'] }}
+                </span>
                                 </td>
                                 <td class="px-4 py-2">
                                     @if(!json_validate($client->status_description))
                                         <span
                                             class="inline-block px-3 py-1 rounded-full text-xs font-medium shadow-sm bg-gray-100 text-gray-900">
-                                            {{ $client->status_description }}
-                                        </span>
+                        {{ $client->status_description }}
+                    </span>
                                     @endif
                                 </td>
                             </tr>
