@@ -36,8 +36,11 @@
                     </x-slot>
 
                     <x-slot name="content">
-                        <x-dropdown-link :href="route('beneficiary.create')">
+                        <x-dropdown-link disabled="disabled" :href="route('beneficiary.create-business')">
                             {{ __('Создать Бенефициара') }}
+                        </x-dropdown-link>
+                        <x-dropdown-link disabled="" :href="route('beneficiary.create')">
+                            {{ __('Создать Бенефициара (Физ. Лицо)') }}
                         </x-dropdown-link>
 
                         <!-- Authentication -->
@@ -86,8 +89,11 @@
             </div>
 
             <div class="mt-3 space-y-1">
-                <x-dropdown-link :href="route('beneficiary.create')">
+                <x-dropdown-link disabled="" :href="route('beneficiary.create-business')">
                     {{ __('Создать Бенефициара') }}
+                </x-dropdown-link>
+                <x-dropdown-link disabled="disabled" :href="route('beneficiary.create')">
+                    {{ __('Создать Бенефициара (Физ. Лицо)') }}
                 </x-dropdown-link>
 
                 <!-- Authentication -->

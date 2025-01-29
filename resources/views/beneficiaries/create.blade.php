@@ -3,7 +3,7 @@
 @section('content')
 <form action="{{ route('beneficiary.store') }}" method="POST" class="bg-white shadow-md rounded-lg p-6 space-y-4">
     @csrf
-
+    <input type="hidden" name="type" value="personal">
     <h3 class="text-lg font-semibold text-blue-600">Форма регистрации</h3>
 
     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
