@@ -40,7 +40,7 @@ class Client extends Model
         ],
         'payment_executed' => [
             'color' => 'bg-gray-300',
-            'text' =>  'Платеж выполнен'
+            'text' =>  'Отправлено'
         ],
         'payment_in_process' => [
             'color' => 'bg-blue-100',
