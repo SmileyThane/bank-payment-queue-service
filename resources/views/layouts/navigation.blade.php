@@ -37,7 +37,7 @@
 
                     <x-slot name="content">
                         <x-dropdown-link :href="route('beneficiary.create')">
-                            {{ __('Создать Бенифициара') }}
+                            {{ __('Создать Бенефициара') }}
                         </x-dropdown-link>
 
                         <!-- Authentication -->
@@ -87,7 +87,7 @@
 
             <div class="mt-3 space-y-1">
                 <x-dropdown-link :href="route('beneficiary.create')">
-                    {{ __('Создать Бенифициара') }}
+                    {{ __('Создать Бенефициара') }}
                 </x-dropdown-link>
 
                 <!-- Authentication -->

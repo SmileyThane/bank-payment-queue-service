@@ -19,16 +19,16 @@
                                 </a>
                             @endif
                         </div>
-                        <p class="text-sm text-gray-600">Бенифициар активирован:
+                        <p class="text-sm text-gray-600">Бенефициар активирован:
                             <strong class="text-black">{{ $beneficiary['isActive'] ? 'Да' : 'Нет' }}</strong>
                         </p>
-                        <p class="text-sm text-gray-600">ID бенифициара:
+                        <p class="text-sm text-gray-600">ID бенефициара:
                             <strong class="text-black">{{ $upload['beneficiary_id'] }}</strong>
                         </p>
-                        <p class="text-sm text-gray-600">ФИО бенифициара:
+                        <p class="text-sm text-gray-600">ФИО бенефициара:
                             <strong class="text-black">{{ $beneficiary['data']['lastName'] }} {{ $beneficiary['data']['firstName'] }} {{ $beneficiary['data']['middleName'] }}</strong>
                         </p>
-                        <p class="text-sm text-gray-600">Еmail бенифициара:
+                        <p class="text-sm text-gray-600">Еmail бенефициара:
                             <strong class="text-black">{{ $beneficiary['data']['email'] }}</strong>
                         </p>
 
