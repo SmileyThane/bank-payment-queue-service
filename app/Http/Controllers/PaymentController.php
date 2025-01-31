@@ -372,7 +372,8 @@ class PaymentController extends Controller
             $result = $this->createBeneficearyPersonalProcess($request);
         }
 
-        dd($result);
+        Cache::clear();
+
 //        TODO: add validation errors
 //        if ($result && $result['isSuccess'] === true) {
 //            return redirect()->route('upload');
@@ -464,6 +465,13 @@ class PaymentController extends Controller
 
     public function getBeneficiary(string $beneficiaryId)
     {
+        $beneficiary = Cache::get($beneficiaryId);
+        if ($beneficiary) {
+            return $beneficiary;
+        }
+
+        $beneficiary = [];
+
         if (!Cache::has('access_token')) {
             $this->authorize();
         }
@@ -487,10 +495,12 @@ class PaymentController extends Controller
         $result = json_decode($response, true);
 
         if ($result && $result['isSuccess'] === true && isset($result['value'])) {
-            return $result['value']['beneficiary'];
+            $beneficiary = $result['value']['beneficiary'];
         }
 
-        return [];
+        Cache::put($beneficiaryId, $beneficiary, 7200);
+
+        return $beneficiary;
     }
 
     public function activateBeneficiary($beneficiaryId)
@@ -524,6 +534,7 @@ class PaymentController extends Controller
         $result = json_decode($response, true);
 
         if ($result && $result['isSuccess'] === true) {
+            Cache::clear();
             return redirect()->back();
         }
 
@@ -647,7 +658,6 @@ class PaymentController extends Controller
     public function processBalance(Request $request, string $virtualAccountId)
     {
         $payment = json_decode($request->payment, true);
-
         $this->paymentIdentificationProcess($payment['id'], $virtualAccountId, $payment['amount']);
     }
 
