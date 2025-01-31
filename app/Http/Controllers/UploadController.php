@@ -62,12 +62,22 @@ class UploadController extends Controller
         $uploads = Upload::query()->orderByDesc('id')->get();
         $balance = $paymentController->getActualBalance();
         $accounts = $paymentController->getVirtualAccountsList();
+        $beneficiaries = [];
 
         foreach ($accounts as $key => $account) {
-            $accounts[$key]['beneficiary'] = $paymentController->getBeneficiary($account['beneficiaryId']);
+            $beneficiary = $paymentController->getBeneficiary($account['beneficiaryId']);
+
+            $beneficiaries[] = $beneficiary;
+            $accounts[$key]['beneficiary'] = [
+                'name' => $beneficiary['data']['name'] ?? null,
+                'firstName' => $beneficiary['data']['firstName'] ?? null,
+                'lastName' => $beneficiary['data']['lastName'] ?? null,
+                'middleName' => $beneficiary['data']['middleName'] ?? null,
+            ];
         }
 
-        return view('home', compact('balance', 'uploads', 'accounts'));
+
+        return view('home', compact('balance', 'uploads', 'accounts', 'beneficiaries'));
     }
 }
 
