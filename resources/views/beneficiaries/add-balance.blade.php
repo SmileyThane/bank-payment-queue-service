@@ -1,9 +1,9 @@
 @extends('layouts.app')
 
 @section('content')
-<form action="{{ route('beneficiary.processBalance', ['virtualAccountId' => $virtualAccountId]) }}" method="POST" class="bg-white shadow-md rounded-lg p-6 space-y-4">
+<form action="{{ route('virtualAccount.processBalance', ['virtualAccountId' => $virtualAccountId]) }}" method="POST" class="bg-white shadow-md rounded-lg p-6 space-y-4">
     @csrf
-    <h3 class="text-lg font-semibold text-blue-600">Зачисление баланса</h3>
+    <h3 class="text-lg font-semibold text-blue-600 mb-4">Зачисление баланса</h3>
 
     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
         <select class="form-select form-select-md mb-3" name="payment"
