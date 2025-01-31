@@ -17,19 +17,8 @@ Route::middleware('auth')->group(function () {
 //    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
     Route::get('/beneficiary/{beneficiaryId}/activate', [PaymentController::class, 'activateBeneficiary'])->name('activateBeneficiary');
-
-    Route::get('/beneficiary/create', function () {
-        return view('beneficiaries.create');
-    })->name('beneficiary.create');
-
-    Route::get('/beneficiary/create-business', function () {
-        return view('beneficiaries.create-business');
-    })->name('beneficiary.create-business');
-
-    Route::post('/beneficiary', [PaymentController::class, 'createBeneficiary'])->name('beneficiary.store');
-
-    Route::get('/beneficiary/{virtualAccountId}/add-balance', [PaymentController::class, 'addBalance'])->name('beneficiary.addBalance');
-    Route::POST('/beneficiary/{virtualAccountId}/add-balance', [PaymentController::class, 'processBalance'])->name('beneficiary.processBalance');
+    Route::get('/virtual-account/{virtualAccountId}/add-balance', [PaymentController::class, 'addBalance'])->name('virtualAccount.addBalance');
+    Route::post('/virtual-account/{virtualAccountId}/add-balance', [PaymentController::class, 'processBalance'])->name('virtualAccount.processBalance');
 });
 
 require __DIR__.'/auth.php';
