@@ -336,7 +336,7 @@ class PaymentController extends Controller
 
         $curl = curl_init();
         curl_setopt_array($curl, array(
-            CURLOPT_URL => 'https://api-gate.vestabankdev.ru/release/api/nominalaccounts-service/v2/partner/accounts/40702810900110714822/virtual-accounts/search?perPage=100',
+            CURLOPT_URL => 'https://api-gate.vestabankdev.ru/release/api/nominalaccounts-service/v2/partner/accounts/' . env('BANK_ACCOUNT_NUMBER') . '/virtual-accounts/search?perPage=100',
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_ENCODING => '',
             CURLOPT_MAXREDIRS => 10,
