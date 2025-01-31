@@ -63,6 +63,10 @@ class UploadController extends Controller
         $balance = $paymentController->getActualBalance();
         $accounts = $paymentController->getVirtualAccountsList();
 
+        foreach ($accounts as $key => $account) {
+            $accounts[$key]['beneficiary'] = $paymentController->getBeneficiary($account['beneficiaryId']);
+        }
+
         return view('home', compact('balance', 'uploads', 'accounts'));
     }
 }

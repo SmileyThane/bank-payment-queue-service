@@ -37,7 +37,16 @@
                                     @endif
                                         value="{{ json_encode($account) }}"
                                 >
-                                    {{ $account['accountNumber'] }} Баланс: {{$account['availableFunds']}}
+                                    @if(isset($account['beneficiary']['data']['name']))
+                                        <p class="text-sm text-gray-600">Наименование бенефициара:
+                                            {{$account['beneficiary']['data']['name'] }}
+                                        </p>
+                                    @else
+                                        <p class="text-sm text-gray-600">Наименование бенефициара:
+                                            {{ $account['beneficiary']['data']['lastName'] }} {{ $account['beneficiary']['data']['firstName'] }} {{ $account['beneficiary']['data']['middleName'] }}
+                                        </p>
+                                    @endif
+                                    Баланс: {{$account['availableFunds']}} ID Виртуального аккаунта: {{ $account['accountNumber'] }}
                                 </option>
                             @endforeach
                         </select>
