@@ -529,4 +529,127 @@ class PaymentController extends Controller
 
         return null;
     }
+
+    public function getListOfNotIdentifiedPayments()
+    {
+        if (!Cache::has('access_token')) {
+            $this->authorize();
+        }
+
+        $curl = curl_init();
+
+        curl_setopt_array($curl, array(
+            CURLOPT_URL => 'https://api-gate.vestabankdev.ru/release/api/nominalaccounts-service/v2/partner/accounts/' . env('BANK_ACCOUNT_NUMBER') . '/payments?PerPage=10&Filters.IsIdentified=false',
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_ENCODING => '',
+            CURLOPT_MAXREDIRS => 10,
+            CURLOPT_TIMEOUT => 0,
+            CURLOPT_FOLLOWLOCATION => true,
+            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+            CURLOPT_CUSTOMREQUEST => 'GET',
+            CURLOPT_HTTPHEADER => array(
+                'Authorization: Bearer ' . Cache::get('access_token')
+            ),
+        ));
+
+        $response = curl_exec($curl);
+        $result = json_decode($response, true);
+
+        if ($result && $result['isSuccess'] === true && isset($result['value']['payments'])) {
+            return $result['value']['payments'];
+        }
+
+        return [];
+
+    }
+
+    public function getListNotIdentifiedPayment(string $identificationNumber)
+    {
+        if (!Cache::has('access_token')) {
+            $this->authorize();
+        }
+
+        $curl = curl_init();
+
+        curl_setopt_array($curl, array(
+            CURLOPT_URL => 'https://api-gate.vestabankdev.ru/release/api/nominalaccounts-service/v2/partner/accounts/' . env('BANK_ACCOUNT_NUMBER') . '/payments/' . $identificationNumber,
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_ENCODING => '',
+            CURLOPT_MAXREDIRS => 10,
+            CURLOPT_TIMEOUT => 0,
+            CURLOPT_FOLLOWLOCATION => true,
+            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+            CURLOPT_CUSTOMREQUEST => 'GET',
+            CURLOPT_HTTPHEADER => array(
+                'Authorization: Bearer ' . Cache::get('access_token')
+            ),
+        ));
+
+        $response = curl_exec($curl);
+        $result = json_decode($response, true);
+
+        if ($result && $result['isSuccess'] === true && isset($result['value'])) {
+            return $result['value'];
+        }
+
+        return null;
+    }
+
+    public function paymentIdentificationProcess(string $identificationNumber, string $virtualAccountNumber, float $amount)
+    {
+        if (!Cache::has('access_token')) {
+            $this->authorize();
+        }
+
+        $curl = curl_init();
+
+        curl_setopt_array($curl, array(
+            CURLOPT_URL => 'https://api-gate.vestabankdev.ru/release/api/nominalaccounts-service/v2/partner/accounts/' . env('BANK_ACCOUNT_NUMBER') . '/payments/' . $identificationNumber . '/identification',
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_ENCODING => '',
+            CURLOPT_MAXREDIRS => 10,
+            CURLOPT_TIMEOUT => 0,
+            CURLOPT_FOLLOWLOCATION => true,
+            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+            CURLOPT_CUSTOMREQUEST => 'POST',
+            CURLOPT_POSTFIELDS => '{
+                                       "isReturnedPayment": false,
+                                       "paymentOwners": [
+                                           {
+                                               "virtualAccountNumber": "' . $virtualAccountNumber . '",
+                                               "amount": ' . $amount . '
+                                           }
+                                       ]
+                                   }',
+            CURLOPT_HTTPHEADER => array(
+                'Content-Type: application/json',
+                'Authorization: Bearer ' . Cache::get('access_token')
+            ),
+        ));
+
+        curl_exec($curl);
+
+        return redirect()->back();
+    }
+
+    public function addBalance(string $virtualAccountId)
+    {
+        $paymentIds = $this->getListOfNotIdentifiedPayments();
+        $payments = [];
+        foreach ($paymentIds as $value) {
+            $payments[] = $this->getListNotIdentifiedPayment($value);
+        }
+
+
+        return view('beneficiaries.add-balance', compact('payments', 'virtualAccountId'));
+    }
+
+    public function processBalance(Request $request, string $virtualAccountId)
+    {
+        $payment = json_decode($request->payment, true);
+
+        $this->paymentIdentificationProcess($payment['id'], $virtualAccountId, $payment['amount']);
+    }
+
+
 }
