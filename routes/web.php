@@ -16,6 +16,17 @@ Route::middleware('auth')->group(function () {
 //    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
 //    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
+
+    Route::get('/beneficiary/create', function () {
+        return view('beneficiaries.create');
+    })->name('beneficiary.create');
+
+    Route::get('/beneficiary/create-business', function () {
+        return view('beneficiaries.create-business');
+    })->name('beneficiary.create-business');
+
+    Route::post('/beneficiary', [PaymentController::class, 'createBeneficiary'])->name('beneficiary.store');
+
     Route::get('/beneficiary/{beneficiaryId}/activate', [PaymentController::class, 'activateBeneficiary'])->name('activateBeneficiary');
     Route::get('/virtual-account/{virtualAccountId}/add-balance', [PaymentController::class, 'addBalance'])->name('virtualAccount.addBalance');
     Route::post('/virtual-account/{virtualAccountId}/add-balance', [PaymentController::class, 'processBalance'])->name('virtualAccount.processBalance');
