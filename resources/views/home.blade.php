@@ -109,7 +109,7 @@
                                             <td class="px-4 py-2 text-sm font-medium text-gray-900">{{ $upload->reference_id }}</td>
                                             <td class="px-4 py-2">
                                     <span
-                                        class="inline-block bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-xs font-medium text-end">
+                                        class="inline-block text-blue-700 px-3 py-1 text-xs font-medium text-end" style="min-width: 150px;">
                                         {{ number_format($upload->outstanding_amount, 2, ',', ' ') }}
                                     </span>
                                             </td>
