@@ -262,7 +262,7 @@
 
                                 </td>
                                 <td class="px-4 py-2 text-left">
-                                    <a href="{{ route('virtualAccount.addBalance', $account['accountNumber']) }}"
+                                    <a href="{{ route('virtualAccount.addBalance', ['beneficiaryId' => $account['beneficiary']['id'], 'virtualAccountId' => $account['accountNumber']]) }}"
                                        class="bg-blue-500 text-white px-3 py-1 rounded-md text-xs font-medium hover:bg-blue-600 focus:outline-none focus:ring focus:ring-blue-300 inline-block">
                                         <i class="bi bi-cash"></i>
                                         Пополнить баланс

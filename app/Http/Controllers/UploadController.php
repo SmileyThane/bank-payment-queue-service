@@ -69,6 +69,7 @@ class UploadController extends Controller
 
             $beneficiaries[] = $beneficiary;
             $accounts[$key]['beneficiary'] = [
+                'id' => $beneficiary['id'] ?? null,
                 'name' => $beneficiary['data']['name'] ?? null,
                 'firstName' => $beneficiary['data']['firstName'] ?? null,
                 'lastName' => $beneficiary['data']['lastName'] ?? null,
