@@ -10,6 +10,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
+use Illuminate\View\View;
 use JsonException;
 
 class PaymentController extends Controller
@@ -643,16 +644,16 @@ class PaymentController extends Controller
         return redirect()->back();
     }
 
-    public function addBalance(string $virtualAccountId)
+    final public function addBalance(string $beneficiaryId, string $virtualAccountId): View
     {
-        $paymentIds = $this->getListOfNotIdentifiedPayments();
         $payments = [];
+        $paymentIds = $this->getListOfNotIdentifiedPayments();
+        $beneficiary = $this->getBeneficiary($beneficiaryId);
         foreach ($paymentIds as $value) {
             $payments[] = $this->getListNotIdentifiedPayment($value);
         }
 
-
-        return view('beneficiaries.add-balance', compact('payments', 'virtualAccountId'));
+        return view('beneficiaries.add-balance', compact('payments', 'virtualAccountId', 'beneficiary'));
     }
 
     public function processBalance(Request $request, string $virtualAccountId)

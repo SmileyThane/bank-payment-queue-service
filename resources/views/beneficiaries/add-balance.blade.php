@@ -21,6 +21,21 @@
             <label for="virtual_account_id" class="block text-sm font-medium text-gray-700"> ID Виртуального аккаунта:</label>
             <input type="text" disabled id="virtual_account_id" name="virtual_account_id" class="w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 text-sm" value="{{$virtualAccountId}}">
         </div>
+
+        <div>
+            <label for="name" class="block text-sm font-medium text-gray-700"> Наименование:</label>
+            @if(isset($beneficiary['data']['name']))
+                <p class="text-sm text-gray-600">
+                    {{$beneficiary['data']['name'] }}
+                </p>
+            @else
+                @if(isset($beneficiary['data']))
+                    <p class="text-sm text-gray-600">
+                        {{ $beneficiary['data']['lastName'] }} {{ $beneficiary['data']['firstName'] }} {{ $beneficiary['data']['middleName'] }}
+                    </p>
+                @endif
+            @endif
+        </div>
     </div>
 
     <button type="submit" class="w-full bg-blue-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-blue-700 focus:outline-none focus:ring focus:ring-blue-300 mt-5">
