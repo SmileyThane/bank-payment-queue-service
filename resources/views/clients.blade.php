@@ -48,7 +48,7 @@
                         <p class="text-sm text-gray-600">ID виртуального аккаунта: <strong
                                 class="text-black">{{ $upload->virtual_account_id }}</strong></p>
                         <p class="text-sm text-gray-600">Актуальный баланс: <strong
-                                class="text-black">{{ $balance }}</strong></p>
+                                class="text-black">{{ number_format($balance, 2, ',', ' ') }}</strong></p>
                     </div>
                     <div>
                         @if($isExecuted)
@@ -97,22 +97,23 @@
                                 <td class="px-4 py-2 text-sm font-medium text-gray-900">{{ $client->surname }}</td>
                                 <td class="px-4 py-2 text-sm text-gray-700">{{ $client->patronymic }}</td>
                                 <td class="px-4 py-2">
-                <span
-                    class="inline-block bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-xs font-medium shadow-sm">{{ $client->card_number }}</span>
+                                    <span
+                                        class="inline-block bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-xs font-medium shadow-sm">{{ $client->card_number }}</span>
                                 </td>
-                                <td class="px-4 py-2 text-sm text-gray-700 text-end">{{ $client->amount }}</td>
+                                <td style="min-width: 150px;"
+                                    class="px-4 py-2 text-sm text-gray-700 text-end">{{ number_format($client->amount, 2, ',', ' ') }}</td>
                                 <td class="px-4 py-2">
-                <span
-                    class="inline-block px-3 py-1 {{Client::STATUS_MESSAGES[$client->status]['color']}} rounded-full text-xs font-medium shadow-sm">
-                    {{ Client::STATUS_MESSAGES[$client->status]['text'] }}
-                </span>
+                                    <span
+                                        class="inline-block px-3 py-1 {{Client::STATUS_MESSAGES[$client->status]['color']}} rounded-full text-xs font-medium shadow-sm">
+                                        {{ Client::STATUS_MESSAGES[$client->status]['text'] }}
+                                    </span>
                                 </td>
                                 <td class="px-4 py-2">
                                     @if(!json_validate($client->status_description))
                                         <span
                                             class="inline-block px-3 py-1 rounded-full text-xs font-medium shadow-sm bg-gray-100 text-gray-900">
-                        {{ $client->status_description }}
-                    </span>
+                                            {{ $client->status_description }}
+                                        </span>
                                     @endif
                                 </td>
                             </tr>

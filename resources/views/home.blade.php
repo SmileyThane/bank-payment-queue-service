@@ -4,16 +4,13 @@
     <div class="container mx-auto my-12 space-y-12">
         <!-- Tabs Navigation -->
         <div class="bg-white shadow-md rounded-lg">
-            <div class="flex border-b border-gray-200">
-                <button class="tab-link w-1/2 py-4 px-4 text-center text-blue-600 font-semibold border-b-2 border-blue-600 focus:outline-none active"
-                        data-tab="uploadTab">Работа с реестрами
-                </button>
-                <button class="tab-link w-1/2 py-4 px-4 text-center text-gray-600 font-semibold border-b-2 border-transparent hover:text-blue-600 hover:border-blue-600 focus:outline-none"
-                        data-tab="beneficiaryTab">Список бенефициаров
-                </button>
-                <button class="tab-link w-1/2 py-4 px-4 text-center text-gray-600 font-semibold border-b-2 border-transparent hover:text-blue-600 hover:border-blue-600 focus:outline-none"
-                        data-tab="virtualAccountsTab">Список виртуальных банковских счетов
-                </button>
+            <div class="flex border-b border-gray-200 items-center justify-between">
+                <div class="flex">
+                    <button class="tab-link w-1/3 py-4 px-4 text-center text-blue-600 font-semibold border-b-2 border-blue-600 focus:outline-none active" data-tab="uploadTab">Работа с реестрами</button>
+                    <button class="tab-link w-1/3 py-4 px-4 text-center text-gray-600 font-semibold border-b-2 border-transparent hover:text-blue-600 hover:border-blue-600 focus:outline-none" data-tab="beneficiaryTab">Список бенефициаров</button>
+                    <button class="tab-link w-1/3 py-4 px-4 text-center text-gray-600 font-semibold border-b-2 border-transparent hover:text-blue-600 hover:border-blue-600 focus:outline-none" data-tab="virtualAccountsTab">Список виртуальных банковских счетов</button>
+                </div>
+                <p class="text-sm text-gray-600 text-center p-2 me-2 bg-gray-200">Баланс Н/C: <strong class="text-black">{{ number_format($balance, 2, ',', ' ') }}</strong></p>
             </div>
 
             <!-- Upload Registry Tab -->
@@ -55,19 +52,18 @@
                                                 @endif
                                                 value="{{ json_encode($account) }}"
                                             >
-                                                @if(isset($account['beneficiary']['data']['name']))
-                                                    <p class="text-sm text-gray-600">Наименование бенефициара:
-                                                        {{$account['beneficiary']['data']['name'] }}
+                                                @if(isset($account['beneficiary']['name']))
+                                                    <p class="text-sm text-gray-600">Наименование:
+                                                        {{$account['beneficiary']['name'] }}
                                                     </p>
                                                 @else
-                                                    @if(isset($account['beneficiary']['data']))
-                                                        <p class="text-sm text-gray-600">Наименование бенефициара:
-                                                            {{ $account['beneficiary']['data']['lastName'] }} {{ $account['beneficiary']['data']['firstName'] }} {{ $account['beneficiary']['data']['middleName'] }}
+                                                    @if(isset($account['beneficiary']))
+                                                        <p class="text-sm text-gray-600">Наименование:
+                                                            {{ $account['beneficiary']['lastName'] }} {{ $account['beneficiary']['firstName'] }} {{ $account['beneficiary']['middleName'] }}
                                                         </p>
                                                     @endif
                                                 @endif
-                                                Баланс: {{$account['availableFunds']}} ID Виртуального
-                                                аккаунта: {{ $account['accountNumber'] }}
+                                                Баланс: {{$account['availableFunds']}} ID: {{ $account['accountNumber'] }}
                                             </option>
                                         @endforeach
                                     </select>
@@ -87,9 +83,6 @@
                         <div class="bg-gray-50 rounded-t-lg p-6">
                             <h3 class="text-lg font-semibold text-blue-600">Загруженные реестры</h3>
                             <p class="text-sm text-gray-600">Загруженные реестры отображены ниже.</p>
-                            <p class="text-sm text-gray-600">Актуальный баланс: <strong
-                                    class="text-black">{{ $balance }}</strong>
-                            </p>
                         </div>
                         <div class="p-6">
                             <div class="overflow-x-auto">
@@ -114,15 +107,10 @@
                                         <tr class="border-b last:border-none">
                                             <td class="px-4 py-2 text-sm font-medium text-gray-900">{{ $upload->file_name }}</td>
                                             <td class="px-4 py-2 text-sm font-medium text-gray-900">{{ $upload->reference_id }}</td>
-                                            {{--                                <td class="px-4 py-2">--}}
-                                            {{--                                    <span class="inline-block bg-gray-100 text-gray-700 px-3 py-1 rounded-full text-xs font-medium">--}}
-                                            {{--                                        {{ $upload->hash }}--}}
-                                            {{--                                    </span>--}}
-                                            {{--                                </td>--}}
                                             <td class="px-4 py-2">
                                     <span
-                                        class="inline-block bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-xs font-medium">
-                                        {{ $upload->outstanding_amount }}
+                                        class="inline-block bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-xs font-medium text-end">
+                                        {{ number_format($upload->outstanding_amount, 2, ',', ' ') }}
                                     </span>
                                             </td>
                                             <td class="px-4 py-2">
@@ -256,8 +244,8 @@
                                 </td>
 
                                 <td class="px-4 py-2 text-sm text-gray-700">
-                                    <p class="text-sm text-gray-600">
-                                        {{ $account['availableFunds'] }}
+                                    <p class="text-sm text-gray-600 text-end">
+                                        {{ number_format($account['availableFunds'], 2, ',', ' ') }}
                                     </p>
 
                                 </td>
