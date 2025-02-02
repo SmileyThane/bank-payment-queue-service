@@ -661,7 +661,7 @@ class PaymentController extends Controller
         $payment = json_decode($request->payment, true);
         $this->paymentIdentificationProcess($payment['id'], $virtualAccountId, $payment['amount']);
 
-        return redirect()->back();
+        return redirect()->route('home');
     }
 
 
