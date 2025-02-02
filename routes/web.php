@@ -28,7 +28,7 @@ Route::middleware('auth')->group(function () {
     Route::post('/beneficiary', [PaymentController::class, 'createBeneficiary'])->name('beneficiary.store');
 
     Route::get('/beneficiary/{beneficiaryId}/activate', [PaymentController::class, 'activateBeneficiary'])->name('activateBeneficiary');
-    Route::get('/virtual-account/{virtualAccountId}/add-balance', [PaymentController::class, 'addBalance'])->name('virtualAccount.addBalance');
+    Route::get('/beneficiary/{beneficiaryId}/virtual-account/{virtualAccountId}/add-balance', [PaymentController::class, 'addBalance'])->name('virtualAccount.addBalance');
     Route::post('/virtual-account/{virtualAccountId}/add-balance', [PaymentController::class, 'processBalance'])->name('virtualAccount.processBalance');
 });
 
