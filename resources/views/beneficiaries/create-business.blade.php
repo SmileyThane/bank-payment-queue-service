@@ -5,7 +5,7 @@
     @csrf
 
     <input type="hidden" name="type" value="business">
-    <h3 class="text-lg font-semibold text-blue-600">Форма регистрации бенефициара ()</h3>
+    <h3 class="text-lg font-semibold text-blue-600">Форма регистрации бенефициара</h3>
 
     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
