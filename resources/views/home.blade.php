@@ -1,6 +1,11 @@
 @extends('layouts.app')
 
 @section('content')
+    @if(\Session::has('activation_message'))
+        <div class="alert alert-danger" role="alert">
+            {{ \Session::get('activation_message') }}
+        </div>
+    @endif
     <div class="container mx-auto my-12 space-y-12">
         <!-- Tabs Navigation -->
         <div class="bg-white shadow-md rounded-lg">

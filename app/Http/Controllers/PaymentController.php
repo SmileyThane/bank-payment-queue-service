@@ -539,9 +539,9 @@ class PaymentController extends Controller
 
         }
 
-//        if ($result && $result['isSuccess'] === false) {
-//            dd($result['error']);
-//        }
+        if ($result && $result['isSuccess'] === false) {
+            return redirect()->route('home')->with('activation_message', $result['error']['message']);
+        }
 
         return redirect()->route('home');
     }
