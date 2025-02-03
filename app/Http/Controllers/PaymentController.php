@@ -536,10 +536,14 @@ class PaymentController extends Controller
 
         if ($result && $result['isSuccess'] === true) {
             Cache::clear();
-            return redirect()->back();
+
         }
 
-        return null;
+//        if ($result && $result['isSuccess'] === false) {
+//            dd($result['error']);
+//        }
+
+        return redirect()->route('home');
     }
 
     public function getListOfNotIdentifiedPayments()
