@@ -138,15 +138,18 @@ class PaymentController extends Controller
     public function initPaymentProcess($clients, string $virtualAccountId, $paymentComment = null): void
     {
         foreach ($clients as $client) {
-            $purpose = ($paymentComment ?? 'Отправка на карту. ') . $client->name . ' ' . $client->surname;
-            $dealId = $this->createPayment($client->id, $virtualAccountId, $client->card_number, $client->amount, $purpose);
-            if ($dealId) {
-                $client->deal_id = $dealId;
-                $client->status = Client::STATUSES[1];
-                $client->save();
+            if (!$client->deal_id) {
+                $purpose = ($paymentComment ?? 'Отправка на карту. ') . $client->name . ' ' . $client->surname;
+                $dealId = $this->createPayment($client->id, $virtualAccountId, $client->card_number, $client->amount, $purpose);
+                if ($dealId) {
+                    $client->deal_id = $dealId;
+                    $client->status = Client::STATUSES[1];
+                    $client->save();
 
-                $this->processPayment($client->id, $dealId);
+                    $this->processPayment($client->id, $dealId);
+                }
             }
+
         }
     }
 
