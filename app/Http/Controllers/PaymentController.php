@@ -380,7 +380,7 @@ class PaymentController extends Controller
 //            return redirect()->route('upload');
 //        }
 
-        return redirect()->route('upload');
+        return redirect()->route('home');
     }
 
     private function createBeneficearyBusinessProcess(Request $request)
