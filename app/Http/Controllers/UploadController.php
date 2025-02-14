@@ -40,6 +40,9 @@ class UploadController extends Controller
             }
 
             $outstandingAmount += $row[4];
+            if (empty($row[0])) {
+                continue;
+            }
             Client::query()->create([
                 'name' => $row[0],
                 'surname' => $row[1],
