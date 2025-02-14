@@ -10,6 +10,8 @@ class CreatePaymentProcessJob implements ShouldQueue
 {
     use Queueable;
 
+    public $timeout = 7200;
+
     private $clients;
     private $paymentComment;
 
