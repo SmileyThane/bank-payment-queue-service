@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Jobs\CreatePaymentInitiationJob;
 use App\Jobs\CreatePaymentProcessJob;
 use App\Models\Client;
 use App\Models\Upload;
@@ -28,7 +29,7 @@ class PaymentController extends Controller
         $curl = curl_init();
 
         curl_setopt_array($curl, array(
-            CURLOPT_URL => 'https://m.blanc.ru/api/nominalaccounts-service/v2/partner/accounts/' . env('BANK_ACCOUNT_NUMBER') . '/balance',
+            CURLOPT_URL => env('BANK_MAIN_URL') . '/api/nominalaccounts-service/v2/partner/accounts/' . env('BANK_ACCOUNT_NUMBER') . '/balance',
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_ENCODING => '',
             CURLOPT_MAXREDIRS => 10,
@@ -61,7 +62,7 @@ class PaymentController extends Controller
         $curl = curl_init();
 
         curl_setopt_array($curl, array(
-            CURLOPT_URL => 'https://m.blanc.ru/api/nominalaccounts-service/v2/partner/accounts/' . env('BANK_ACCOUNT_NUMBER') . '/beneficiaries/' . $beneficiaryId . '/virtual-accounts/' . $virtualAccountId,
+            CURLOPT_URL => env('BANK_MAIN_URL') . '/api/nominalaccounts-service/v2/partner/accounts/' . env('BANK_ACCOUNT_NUMBER') . '/beneficiaries/' . $beneficiaryId . '/virtual-accounts/' . $virtualAccountId,
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_ENCODING => '',
             CURLOPT_MAXREDIRS => 10,
@@ -93,7 +94,7 @@ class PaymentController extends Controller
         $curl = curl_init();
 
         curl_setopt_array($curl, array(
-            CURLOPT_URL => 'https://m.blanc.ru/api/sso/connect/token',
+            CURLOPT_URL => env('BANK_MAIN_URL') . '/api/sso/connect/token',
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_ENCODING => '',
             CURLOPT_MAXREDIRS => 10,
@@ -122,12 +123,12 @@ class PaymentController extends Controller
     /**
      * @throws JsonException
      */
-    final public function initPayment(Request $request, string $hash): RedirectResponse
+    final public function initDeals(Request $request, string $hash): RedirectResponse
     {
         $upload = Upload::query()->where('hash', $hash)->firstOrFail();
         if ($upload) {
             $clients = Client::query()->where('upload_id', $upload->id)->get();
-            CreatePaymentProcessJob::dispatch($clients, $upload->virtual_account_id, $request->payment_comment);
+            CreatePaymentInitiationJob::dispatch($upload, $clients, $upload->virtual_account_id, $request->payment_comment);
             $upload->is_executed = 1;
             $upload->save();
         }
@@ -135,28 +136,46 @@ class PaymentController extends Controller
         return redirect()->back();
     }
 
-    public function initPaymentProcess($clients, string $virtualAccountId, $paymentComment = null): void
+    final public function initPaymentProcess(Request $request, string $hash): RedirectResponse
+    {
+        $upload = Upload::query()->where('hash', $hash)->firstOrFail();
+        if ($upload) {
+            $clients = Client::query()->where('upload_id', $upload->id)->get();
+            CreatePaymentProcessJob::dispatch($clients);
+            $upload->is_processed = 1;
+            $upload->save();
+        }
+
+        return redirect()->back();
+
+    }
+
+    public function initPayment($upload, $clients, string $virtualAccountId, $paymentComment = null): void
     {
         foreach ($clients as $client) {
             if (!$client->deal_id) {
+                $client->deal_id = Str::uuid();
+                $client->save();
+
+                Log::info('Process initiated: client ID: ' . $client->id . '; Upload ID: ' . $client->upload_id . '; Deal ID: ' . $client->deal_id . ';');
+
                 $purpose = ($paymentComment ?? 'Отправка на карту. ') . $client->name . ' ' . $client->surname;
-                $dealId = $this->createPayment($client->id, $virtualAccountId, $client->card_number, $client->amount, $purpose);
+                $dealId = $this->createPayment($client->id, $client->deal_id, $virtualAccountId, $client->card_number, $client->amount, $purpose);
                 if ($dealId) {
-                    $client->deal_id = $dealId;
                     $client->status = Client::STATUSES[1];
                     $client->save();
-
-                    $this->processPayment($client->id, $dealId);
                 }
             }
-
         }
+
+        $upload->is_deals_created = true;
+        $upload->save();
     }
 
     /**
      * @throws JsonException
      */
-    private function createPayment(int $id, string $virtualAccountId, string $cardNumber, float $amount, string $purpose = ''): string|null
+    private function createPayment(int $id, string $dealId, string $virtualAccountId, string $cardNumber, float $amount, string $purpose = ''): string|null
     {
         if (!Cache::has('access_token')) {
             $this->authorize();
@@ -165,7 +184,7 @@ class PaymentController extends Controller
         $curl = curl_init();
 
         curl_setopt_array($curl, [
-            CURLOPT_URL => 'https://m.blanc.ru/api/nominalaccounts-service/v2/partner/accounts/' . env('BANK_ACCOUNT_NUMBER') . '/deals',
+            CURLOPT_URL => env('BANK_MAIN_URL') . '/api/nominalaccounts-service/v2/partner/accounts/' . env('BANK_ACCOUNT_NUMBER') . '/deals',
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_ENCODING => '',
             CURLOPT_MAXREDIRS => 10,
@@ -174,7 +193,7 @@ class PaymentController extends Controller
             CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
             CURLOPT_CUSTOMREQUEST => 'POST',
             CURLOPT_POSTFIELDS => '{
-                                        "id": "' . Str::uuid() . '",
+                                        "id": "' . $dealId . '",
                                         "amount": ' . $amount . ',
                                         "payers": [
                                             {
@@ -203,6 +222,8 @@ class PaymentController extends Controller
         $result = json_decode($response, true);
 
         if ($result && $result['isSuccess'] === true && $result['value']['dealId']) {
+            Log::info('Deal created: client ID: ' . $id . '; Deal ID: ' . $result['value']['dealId'] . ';');
+
             return $result['value']['dealId'];
         }
 
@@ -230,7 +251,7 @@ class PaymentController extends Controller
         }
     }
 
-    private function processPayment(int $clientId, string $dealId): void
+    public function processPayment(int $clientId, string $dealId): void
     {
         if (!Cache::has('access_token')) {
             $this->authorize();
@@ -238,7 +259,7 @@ class PaymentController extends Controller
 
         $curl = curl_init();
         curl_setopt_array($curl, array(
-            CURLOPT_URL => 'https://m.blanc.ru/api/nominalaccounts-service/v2/partner/accounts/' . env('BANK_ACCOUNT_NUMBER') . '/deals/' . $dealId . '/execute',
+            CURLOPT_URL => env('BANK_MAIN_URL') . '/api/nominalaccounts-service/v2/partner/accounts/' . env('BANK_ACCOUNT_NUMBER') . '/deals/' . $dealId . '/execute',
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_ENCODING => '',
             CURLOPT_MAXREDIRS => 10,
@@ -258,6 +279,9 @@ class PaymentController extends Controller
             Client::query()->where('id', $clientId)->update([
                 'status' => Client::STATUSES[3],
             ]);
+
+            Log::info('Processed: client ID: ' . $clientId . '; Deal ID: ' . $dealId . ';');
+
             return;
         }
 
@@ -311,7 +335,7 @@ class PaymentController extends Controller
 
         $curl = curl_init();
         curl_setopt_array($curl, array(
-            CURLOPT_URL => 'https://m.blanc.ru/api/nominalaccounts-service/v2/partner/accounts/' . env('BANK_ACCOUNT_NUMBER') . '/deals/' . $dealId,
+            CURLOPT_URL => env('BANK_MAIN_URL') . '/api/nominalaccounts-service/v2/partner/accounts/' . env('BANK_ACCOUNT_NUMBER') . '/deals/' . $dealId,
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_ENCODING => '',
             CURLOPT_MAXREDIRS => 10,
@@ -342,7 +366,7 @@ class PaymentController extends Controller
 
         $curl = curl_init();
         curl_setopt_array($curl, array(
-            CURLOPT_URL => 'https://m.blanc.ru/api/nominalaccounts-service/v2/partner/accounts/' . env('BANK_ACCOUNT_NUMBER') . '/virtual-accounts/search?perPage=100',
+            CURLOPT_URL => env('BANK_MAIN_URL') . '/api/nominalaccounts-service/v2/partner/accounts/' . env('BANK_ACCOUNT_NUMBER') . '/virtual-accounts/search?perPage=100',
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_ENCODING => '',
             CURLOPT_MAXREDIRS => 10,
@@ -402,7 +426,7 @@ class PaymentController extends Controller
         ], JSON_UNESCAPED_UNICODE);
 
         curl_setopt_array($curl, array(
-            CURLOPT_URL => 'https://m.blanc.ru/api/nominalaccounts-service/v2/partner/accounts/' . env('BANK_ACCOUNT_NUMBER') . '/beneficiaries/createLegalAndVirtualAccount',
+            CURLOPT_URL => env('BANK_MAIN_URL') . '/api/nominalaccounts-service/v2/partner/accounts/' . env('BANK_ACCOUNT_NUMBER') . '/beneficiaries/createLegalAndVirtualAccount',
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_ENCODING => '',
             CURLOPT_MAXREDIRS => 10,
@@ -428,7 +452,7 @@ class PaymentController extends Controller
     {
         $curl = curl_init();
         curl_setopt_array($curl, array(
-            CURLOPT_URL => 'https://m.blanc.ru/api/nominalaccounts-service/v2/partner/accounts/' . env('BANK_ACCOUNT_NUMBER') . '/beneficiaries/createPhysicalAndVirtualAccount',
+            CURLOPT_URL => env('BANK_MAIN_URL') . '/api/nominalaccounts-service/v2/partner/accounts/' . env('BANK_ACCOUNT_NUMBER') . '/beneficiaries/createPhysicalAndVirtualAccount',
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_ENCODING => '',
             CURLOPT_MAXREDIRS => 10,
@@ -484,7 +508,7 @@ class PaymentController extends Controller
 
         $curl = curl_init();
         curl_setopt_array($curl, array(
-            CURLOPT_URL => 'https://m.blanc.ru/api/nominalaccounts-service/v2/partner/accounts/' . env('BANK_ACCOUNT_NUMBER') . '/beneficiaries/' . $beneficiaryId,
+            CURLOPT_URL => env('BANK_MAIN_URL') . '/api/nominalaccounts-service/v2/partner/accounts/' . env('BANK_ACCOUNT_NUMBER') . '/beneficiaries/' . $beneficiaryId,
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_ENCODING => '',
             CURLOPT_MAXREDIRS => 10,
@@ -518,7 +542,7 @@ class PaymentController extends Controller
 
         $curl = curl_init();
         curl_setopt_array($curl, array(
-            CURLOPT_URL => 'https://m.blanc.ru/api/nominalaccounts-service/v2/partner/accounts/' . env('BANK_ACCOUNT_NUMBER') . '/beneficiaries/' . $beneficiaryId . '/state',
+            CURLOPT_URL => env('BANK_MAIN_URL') . '/api/nominalaccounts-service/v2/partner/accounts/' . env('BANK_ACCOUNT_NUMBER') . '/beneficiaries/' . $beneficiaryId . '/state',
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_ENCODING => '',
             CURLOPT_MAXREDIRS => 10,
@@ -560,7 +584,7 @@ class PaymentController extends Controller
         $curl = curl_init();
 
         curl_setopt_array($curl, array(
-            CURLOPT_URL => 'https://m.blanc.ru/api/nominalaccounts-service/v2/partner/accounts/' . env('BANK_ACCOUNT_NUMBER') . '/payments?PerPage=10&Filters.IsIdentified=false',
+            CURLOPT_URL => env('BANK_MAIN_URL') . '/api/nominalaccounts-service/v2/partner/accounts/' . env('BANK_ACCOUNT_NUMBER') . '/payments?PerPage=10&Filters.IsIdentified=false',
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_ENCODING => '',
             CURLOPT_MAXREDIRS => 10,
@@ -593,7 +617,7 @@ class PaymentController extends Controller
         $curl = curl_init();
 
         curl_setopt_array($curl, array(
-            CURLOPT_URL => 'https://m.blanc.ru/api/nominalaccounts-service/v2/partner/accounts/' . env('BANK_ACCOUNT_NUMBER') . '/payments/' . $identificationNumber,
+            CURLOPT_URL => env('BANK_MAIN_URL') . '/api/nominalaccounts-service/v2/partner/accounts/' . env('BANK_ACCOUNT_NUMBER') . '/payments/' . $identificationNumber,
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_ENCODING => '',
             CURLOPT_MAXREDIRS => 10,
@@ -625,7 +649,7 @@ class PaymentController extends Controller
         $curl = curl_init();
 
         curl_setopt_array($curl, array(
-            CURLOPT_URL => 'https://m.blanc.ru/api/nominalaccounts-service/v2/partner/accounts/' . env('BANK_ACCOUNT_NUMBER') . '/payments/' . $identificationNumber . '/identification',
+            CURLOPT_URL => env('BANK_MAIN_URL') . '/api/nominalaccounts-service/v2/partner/accounts/' . env('BANK_ACCOUNT_NUMBER') . '/payments/' . $identificationNumber . '/identification',
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_ENCODING => '',
             CURLOPT_MAXREDIRS => 10,
