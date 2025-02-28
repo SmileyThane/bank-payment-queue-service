@@ -10,7 +10,8 @@ Route::middleware('auth')->group(function () {
     Route::get('/', [UploadController::class, 'index'])->name('home');
     Route::post('/upload', [UploadController::class, 'uploadFile'])->name('upload');
     Route::get('/upload/{hash}', [ClientController::class, 'showByHash'])->name('clients');
-    Route::get('/upload/{hash}/pay', [PaymentController::class, 'initPayment'])->name('initPayment');
+    Route::get('/upload/{hash}/pay', [PaymentController::class, 'initDeals'])->name('initDeals');
+    Route::get('/upload/{hash}/pay/process', [PaymentController::class, 'initPaymentProcess'])->name('initPaymentProcess');
 
 //    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
 //    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
