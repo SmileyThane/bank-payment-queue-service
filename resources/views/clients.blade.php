@@ -51,25 +51,38 @@
                                 class="text-black">{{ number_format($balance, 2, ',', ' ') }}</strong></p>
                     </div>
                     <div>
-                        @if($isExecuted)
+                        @if($isExecuted && $isProcessed)
                             <p class="text-sm text-gray-600">Выполнение завершено.</p>
-                        @elseif($outstandingAmount > $balance)
+                        @endif
+                        @if($outstandingAmount > $balance)
                             <p class="text-sm text-red-700">Недостаточно средств.</p>
                         @else
-                            <form action="{{ route('initPayment', ['hash' => $hash]) }}" method="get"
-                                  class="inline-block">
-                                <div class="mb-2">
-                                    <label for="payment_comment" class="block text-sm font-medium text-gray-700 mb-2">Комментарий</label>
-                                    <input name="payment_comment" id="payment_comment"
-                                           class="block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 text-sm"
-                                    >
-                                </div>
-                                <button type="submit"
-                                        class="bg-blue-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-blue-700 focus:outline-none focus:ring focus:ring-blue-300">
-                                    <i class="bi bi-upload"></i>
-                                    Оплатить
-                                </button>
-                            </form>
+                            @if(!$isExecuted)
+                                    <form action="{{ route('initDeals', ['hash' => $hash]) }}" method="get"
+                                          class="inline-block">
+                                        <div class="mb-2">
+                                            <label for="payment_comment" class="block text-sm font-medium text-gray-700 mb-2">Комментарий</label>
+                                            <input name="payment_comment" id="payment_comment"
+                                                   class="block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 text-sm"
+                                            >
+                                        </div>
+                                        <button type="submit"
+                                                class="bg-blue-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-blue-700 focus:outline-none focus:ring focus:ring-blue-300">
+                                            <i class="bi bi-upload"></i>
+                                            Подтвердить сделки
+                                        </button>
+                                    </form>
+                                @endif
+                                @if($isExecuted && $isDealsCreated && !$isProcessed)
+                                    <form action="{{ route('initPaymentProcess', ['hash' => $hash]) }}" method="get"
+                                          class="inline-block">
+                                        <button type="submit"
+                                                class="bg-blue-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-blue-700 focus:outline-none focus:ring focus:ring-blue-300">
+                                            <i class="bi bi-upload"></i>
+                                            Оплатить
+                                        </button>
+                                    </form>
+                                @endif
                         @endif
                     </div>
                 </div>
