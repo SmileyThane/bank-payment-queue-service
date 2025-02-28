@@ -18,10 +18,12 @@ class ClientController extends Controller
         $id = $upload->id;
         $outstandingAmount = $upload->outstanding_amount;
         $isExecuted = $upload->is_executed;
+        $isDealsCreated = $upload->is_deals_created;
+        $isProcessed = $upload->is_processed;
         $clients = Client::query()->where('upload_id', $id)->get();
         $balance = (new PaymentController())->getVirtualActualBalance($upload->beneficiary_id, $upload->virtual_account_id);
         $beneficiary = (new PaymentController())->getBeneficiary($upload->beneficiary_id);
 
-        return view('clients', compact('clients', 'balance', 'hash', 'outstandingAmount', 'isExecuted', 'upload', 'beneficiary'));
+        return view('clients', compact('clients', 'balance', 'hash', 'outstandingAmount', 'isExecuted', 'upload', 'beneficiary', 'isProcessed', 'isDealsCreated'));
     }
 }
