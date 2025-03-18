@@ -11,11 +11,21 @@
         <div class="bg-white shadow-md rounded-lg">
             <div class="flex border-b border-gray-200 items-center justify-between">
                 <div class="flex">
-                    <button class="tab-link w-1/3 py-4 px-4 text-center text-blue-600 font-semibold border-b-2 border-blue-600 focus:outline-none active" data-tab="uploadTab">Работа с реестрами</button>
-                    <button class="tab-link w-1/3 py-4 px-4 text-center text-gray-600 font-semibold border-b-2 border-transparent hover:text-blue-600 hover:border-blue-600 focus:outline-none" data-tab="beneficiaryTab">Список бенефициаров</button>
-                    <button class="tab-link w-1/3 py-4 px-4 text-center text-gray-600 font-semibold border-b-2 border-transparent hover:text-blue-600 hover:border-blue-600 focus:outline-none" data-tab="virtualAccountsTab">Список виртуальных банковских счетов</button>
+                    <button
+                        class="tab-link w-1/3 py-4 px-4 text-center text-blue-600 font-semibold border-b-2 border-blue-600 focus:outline-none active"
+                        data-tab="uploadTab">Работа с реестрами
+                    </button>
+                    <button
+                        class="tab-link w-1/3 py-4 px-4 text-center text-gray-600 font-semibold border-b-2 border-transparent hover:text-blue-600 hover:border-blue-600 focus:outline-none"
+                        data-tab="beneficiaryTab">Список бенефициаров
+                    </button>
+                    <button
+                        class="tab-link w-1/3 py-4 px-4 text-center text-gray-600 font-semibold border-b-2 border-transparent hover:text-blue-600 hover:border-blue-600 focus:outline-none"
+                        data-tab="virtualAccountsTab">Список виртуальных банковских счетов
+                    </button>
                 </div>
-                <p class="text-sm text-gray-600 text-center p-2 me-2 bg-gray-200">Баланс Н/C: <strong class="text-black">{{ number_format($balance, 2, ',', ' ') }}</strong></p>
+                <p class="text-sm text-gray-600 text-center p-2 me-2 bg-gray-200">Баланс Н/C: <strong
+                        class="text-black">{{ number_format($balance, 2, ',', ' ') }}</strong></p>
             </div>
 
             <!-- Upload Registry Tab -->
@@ -68,7 +78,8 @@
                                                         </p>
                                                     @endif
                                                 @endif
-                                                Баланс: {{$account['availableFunds']}} ID: {{ $account['accountNumber'] }}
+                                                Баланс: {{$account['availableFunds']}}
+                                                ID: {{ $account['accountNumber'] }}
                                             </option>
                                         @endforeach
                                     </select>
@@ -101,6 +112,7 @@
                                         <th class="px-4 py-2 text-left text-sm font-medium text-gray-700">Сумма к
                                             выплате
                                         </th>
+                                        <th class="px-4 py-2 text-left text-sm font-medium text-gray-700">Кол-во клиентов</th>
                                         <th class="px-4 py-2 text-left text-sm font-medium text-gray-700">Создано</th>
                                         <th class="px-4 py-2 text-left text-sm font-medium text-gray-700">Обновлено</th>
                                         <th class="px-4 py-2 text-left text-sm font-medium text-gray-700">Статус</th>
@@ -113,10 +125,14 @@
                                             <td class="px-4 py-2 text-sm font-medium text-gray-900">{{ $upload->file_name }}</td>
                                             <td class="px-4 py-2 text-sm font-medium text-gray-900">{{ $upload->reference_id }}</td>
                                             <td class="px-4 py-2">
-                                    <span
-                                        class="inline-block text-blue-700 px-3 py-1 text-xs font-medium text-end" style="min-width: 150px;">
-                                        {{ number_format($upload->outstanding_amount, 2, ',', ' ') }}
-                                    </span>
+                                                <span
+                                                    class="inline-block text-blue-700 px-3 py-1 text-xs font-medium text-end"
+                                                    style="min-width: 150px;">
+                                                    {{ number_format($upload->outstanding_amount, 2, ',', ' ') }}
+                                                </span>
+                                            </td>
+                                            <td class="px-4 py-2">
+                                                {{ $upload->clients_count }}
                                             </td>
                                             <td class="px-4 py-2">
                                      <span class="inline-block px-3 py-1 text-xs font-medium">
@@ -129,22 +145,36 @@
                                       </span>
                                             </td>
                                             <td class="px-4 py-2">
-                                                @if($upload->is_processed === 1)
-                                                    <span
-                                                        class="inline-block bg-green-300 px-3 py-1 rounded-full text-xs font-medium">
-                                            Обработан
-                                        </span>
-                                                @else
+                                                @if($upload->is_processed === 1 && $upload->broken_clients_count > 0)
                                                     <span
                                                         class="inline-block bg-yellow-300 px-3 py-1 rounded-full text-xs font-medium">
-                                        Не обработан
-                                        </span>
+                                                        Обработан частично
+                                                    </span>
+                                                @elseif($upload->is_processed === 1)
+                                                    <span
+                                                        class="inline-block bg-green-300 px-3 py-1 rounded-full text-xs font-medium">
+                                                        Обработан
+                                                    </span>
+                                                @elseif($upload->is_executed === 1)
+                                                    <span
+                                                        class="inline-block bg-gray-200 px-3 py-1 rounded-full text-xs font-medium">
+                                                        В обработке
+                                                    </span>
+                                                @else
+                                                    <span
+                                                        class="inline-block bg-red-600 text-white px-3 py-1 rounded-full text-xs font-medium">
+                                                        Не обработан
+                                                    </span>
                                                 @endif
                                             </td>
                                             <td class="px-4 py-2 text-left">
                                                 <a href="{{ route('clients', $upload->hash) }}"
                                                    class="bg-blue-500 text-white px-3 py-1 rounded-md text-xs font-medium hover:bg-blue-600 focus:outline-none focus:ring focus:ring-blue-300 inline-block">
                                                     <i class="bi bi-eye"></i> Показать клиентов
+                                                </a>
+                                                <a href="{{ route('deleteClients', $upload->id) }}"
+                                                   class=" mt-2 bg-red-600 text-white px-3 py-1 rounded-md text-xs font-medium hover:bg-red-700 focus:outline-none focus:ring focus:ring-blue-300 inline-block">
+                                                    <i class="bi bi-trash"></i> Удалить реестр
                                                 </a>
                                             </td>
                                         </tr>

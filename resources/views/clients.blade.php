@@ -49,6 +49,10 @@
                                 class="text-black">{{ $upload->virtual_account_id }}</strong></p>
                         <p class="text-sm text-gray-600">Актуальный баланс: <strong
                                 class="text-black">{{ number_format($balance, 2, ',', ' ') }}</strong></p>
+                        <p class="text-sm text-gray-600">Не обработано получателей: <strong
+                                class="text-black">{{ $upload['clients_count'] - $processedClientsCount }}</strong></p>
+                        <p class="text-sm text-gray-600">Обработано получателей: <strong
+                                class="text-black">{{ $processedClientsCount }}</strong></p>
                     </div>
                     <div>
                         @if($isExecuted && $isProcessed)
@@ -58,31 +62,32 @@
                             <p class="text-sm text-red-700">Недостаточно средств.</p>
                         @else
                             @if(!$isExecuted)
-                                    <form action="{{ route('initDeals', ['hash' => $hash]) }}" method="get"
-                                          class="inline-block">
-                                        <div class="mb-2">
-                                            <label for="payment_comment" class="block text-sm font-medium text-gray-700 mb-2">Комментарий</label>
-                                            <input name="payment_comment" id="payment_comment"
-                                                   class="block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 text-sm"
-                                            >
-                                        </div>
-                                        <button type="submit"
-                                                class="bg-blue-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-blue-700 focus:outline-none focus:ring focus:ring-blue-300">
-                                            <i class="bi bi-upload"></i>
-                                            Подтвердить сделки
-                                        </button>
-                                    </form>
-                                @endif
-                                @if($isExecuted && $isDealsCreated && !$isProcessed)
-                                    <form action="{{ route('initPaymentProcess', ['hash' => $hash]) }}" method="get"
-                                          class="inline-block">
-                                        <button type="submit"
-                                                class="bg-blue-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-blue-700 focus:outline-none focus:ring focus:ring-blue-300">
-                                            <i class="bi bi-upload"></i>
-                                            Оплатить
-                                        </button>
-                                    </form>
-                                @endif
+                                <form action="{{ route('initDeals', ['hash' => $hash]) }}" method="get"
+                                      class="inline-block">
+                                    <div class="mb-2">
+                                        <label for="payment_comment"
+                                               class="block text-sm font-medium text-gray-700 mb-2">Комментарий</label>
+                                        <input name="payment_comment" id="payment_comment"
+                                               class="block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 text-sm"
+                                        >
+                                    </div>
+                                    <button type="submit"
+                                            class="bg-blue-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-blue-700 focus:outline-none focus:ring focus:ring-blue-300">
+                                        <i class="bi bi-upload"></i>
+                                        Подтвердить сделки
+                                    </button>
+                                </form>
+                            @endif
+                            @if($isExecuted && $isDealsCreated && !$isProcessed)
+                                <form action="{{ route('initPaymentProcess', ['hash' => $hash]) }}" method="get"
+                                      class="inline-block">
+                                    <button type="submit"
+                                            class="bg-blue-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-blue-700 focus:outline-none focus:ring focus:ring-blue-300">
+                                        <i class="bi bi-upload"></i>
+                                        Оплатить
+                                    </button>
+                                </form>
+                            @endif
                         @endif
                     </div>
                 </div>
@@ -90,10 +95,26 @@
 
             <!-- Clients Table -->
             <div class="p-6">
+                <div class="mb-2">
+                    <form action="{{ route('clients', ['hash' => $hash]) }}" method="get"
+                          class="flex">
+                        <input name="search" id="search"
+                               class="block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 text-sm"
+                               value="{{ $search }}"
+                        >
+                        <button type="submit"
+                                class="bg-blue-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-blue-700 focus:outline-none focus:ring focus:ring-blue-300">
+                            <i class="bi bi-upload"></i>
+                            Поиск
+                        </button>
+                    </form>
+
+                </div>
                 <div class="overflow-x-auto">
                     <table class="min-w-full table-auto border-collapse">
                         <thead class="bg-blue-50 border-b border-blue-200">
                         <tr>
+                            <th class="px-4 py-2 text-left text-sm font-medium text-gray-700">#</th>
                             <th class="px-4 py-2 text-left text-sm font-medium text-gray-700">Имя</th>
                             <th class="px-4 py-2 text-left text-sm font-medium text-gray-700">Фамилия</th>
                             <th class="px-4 py-2 text-left text-sm font-medium text-gray-700">Отчество</th>
@@ -104,8 +125,9 @@
                         </tr>
                         </thead>
                         <tbody>
-                        @foreach($clients as $client)
+                        @foreach($clients as $key => $client)
                             <tr class="border-b last:border-none">
+                                <td class="px-4 py-2 text-sm font-medium text-gray-900">{{ $key+1 }}</td>
                                 <td class="px-4 py-2 text-sm font-medium text-gray-900">{{ $client->name }}</td>
                                 <td class="px-4 py-2 text-sm font-medium text-gray-900">{{ $client->surname }}</td>
                                 <td class="px-4 py-2 text-sm text-gray-700">{{ $client->patronymic }}</td>
