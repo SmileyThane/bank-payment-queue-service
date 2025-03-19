@@ -8,6 +8,7 @@ use App\Models\Client;
 use App\Models\Upload;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
@@ -26,10 +27,11 @@ class PaymentController extends Controller
         }
 
 
+        $bankData = $this->getBankData();
         $curl = curl_init();
 
         curl_setopt_array($curl, array(
-            CURLOPT_URL => env('BANK_MAIN_URL') . '/api/nominalaccounts-service/v2/partner/accounts/' . env('BANK_ACCOUNT_NUMBER') . '/balance',
+            CURLOPT_URL => env('BANK_MAIN_URL') . '/api/nominalaccounts-service/v2/partner/accounts/' . $bankData['BANK_ACCOUNT_NUMBER'] . '/balance',
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_ENCODING => '',
             CURLOPT_MAXREDIRS => 10,
@@ -59,10 +61,11 @@ class PaymentController extends Controller
             $this->authorize();
         }
 
+        $bankData = $this->getBankData();
         $curl = curl_init();
 
         curl_setopt_array($curl, array(
-            CURLOPT_URL => env('BANK_MAIN_URL') . '/api/nominalaccounts-service/v2/partner/accounts/' . env('BANK_ACCOUNT_NUMBER') . '/beneficiaries/' . $beneficiaryId . '/virtual-accounts/' . $virtualAccountId,
+            CURLOPT_URL => env('BANK_MAIN_URL') . '/api/nominalaccounts-service/v2/partner/accounts/' . $bankData['BANK_ACCOUNT_NUMBER'] . '/beneficiaries/' . $beneficiaryId . '/virtual-accounts/' . $virtualAccountId,
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_ENCODING => '',
             CURLOPT_MAXREDIRS => 10,
@@ -93,6 +96,10 @@ class PaymentController extends Controller
     {
         $curl = curl_init();
 
+        $bankData = $this->getBankData();
+        $bankClient = $bankData['BANK_CLIENT'];
+        $bankSecret = $bankData['BANK_SECRET'];
+
         curl_setopt_array($curl, array(
             CURLOPT_URL => env('BANK_MAIN_URL') . '/api/sso/connect/token',
             CURLOPT_RETURNTRANSFER => true,
@@ -102,7 +109,7 @@ class PaymentController extends Controller
             CURLOPT_FOLLOWLOCATION => true,
             CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
             CURLOPT_CUSTOMREQUEST => 'POST',
-            CURLOPT_POSTFIELDS => 'client_id=' . env('BANK_CLIENT') . '&client_secret=' . env('BANK_SECRET') . '&scope=' . env('BANK_SCOPE') . '&grant_type=' . env('BANK_GRANT_TYPE'),
+            CURLOPT_POSTFIELDS => 'client_id=' . $bankClient . '&client_secret=' . $bankSecret . '&scope=' . env('BANK_SCOPE') . '&grant_type=' . env('BANK_GRANT_TYPE'),
             CURLOPT_HTTPHEADER => array(
                 'Content-Type: application/x-www-form-urlencoded'
             ),
@@ -181,10 +188,11 @@ class PaymentController extends Controller
             $this->authorize();
         }
 
+        $bankData = $this->getBankData();
         $curl = curl_init();
 
         curl_setopt_array($curl, [
-            CURLOPT_URL => env('BANK_MAIN_URL') . '/api/nominalaccounts-service/v2/partner/accounts/' . env('BANK_ACCOUNT_NUMBER') . '/deals',
+            CURLOPT_URL => env('BANK_MAIN_URL') . '/api/nominalaccounts-service/v2/partner/accounts/' . $bankData['BANK_ACCOUNT_NUMBER'] . '/deals',
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_ENCODING => '',
             CURLOPT_MAXREDIRS => 10,
@@ -257,9 +265,10 @@ class PaymentController extends Controller
             $this->authorize();
         }
 
+        $bankData = $this->getBankData();
         $curl = curl_init();
         curl_setopt_array($curl, array(
-            CURLOPT_URL => env('BANK_MAIN_URL') . '/api/nominalaccounts-service/v2/partner/accounts/' . env('BANK_ACCOUNT_NUMBER') . '/deals/' . $dealId . '/execute',
+            CURLOPT_URL => env('BANK_MAIN_URL') . '/api/nominalaccounts-service/v2/partner/accounts/' . $bankData['BANK_ACCOUNT_NUMBER'] . '/deals/' . $dealId . '/execute',
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_ENCODING => '',
             CURLOPT_MAXREDIRS => 10,
@@ -333,9 +342,10 @@ class PaymentController extends Controller
             $this->authorize();
         }
 
+        $bankData = $this->getBankData();
         $curl = curl_init();
         curl_setopt_array($curl, array(
-            CURLOPT_URL => env('BANK_MAIN_URL') . '/api/nominalaccounts-service/v2/partner/accounts/' . env('BANK_ACCOUNT_NUMBER') . '/deals/' . $dealId,
+            CURLOPT_URL => env('BANK_MAIN_URL') . '/api/nominalaccounts-service/v2/partner/accounts/' . $bankData['BANK_ACCOUNT_NUMBER'] . '/deals/' . $dealId,
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_ENCODING => '',
             CURLOPT_MAXREDIRS => 10,
@@ -364,9 +374,10 @@ class PaymentController extends Controller
             $this->authorize();
         }
 
+        $bankData = $this->getBankData();
         $curl = curl_init();
         curl_setopt_array($curl, array(
-            CURLOPT_URL => env('BANK_MAIN_URL') . '/api/nominalaccounts-service/v2/partner/accounts/' . env('BANK_ACCOUNT_NUMBER') . '/virtual-accounts/search?perPage=100',
+            CURLOPT_URL => env('BANK_MAIN_URL') . '/api/nominalaccounts-service/v2/partner/accounts/' . $bankData['BANK_ACCOUNT_NUMBER'] . '/virtual-accounts/search?perPage=100',
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_ENCODING => '',
             CURLOPT_MAXREDIRS => 10,
@@ -414,6 +425,7 @@ class PaymentController extends Controller
 
     private function createBeneficearyBusinessProcess(Request $request)
     {
+        $bankData = $this->getBankData();
         $curl = curl_init();
 
         $jsonString = json_encode([
@@ -426,7 +438,7 @@ class PaymentController extends Controller
         ], JSON_UNESCAPED_UNICODE);
 
         curl_setopt_array($curl, array(
-            CURLOPT_URL => env('BANK_MAIN_URL') . '/api/nominalaccounts-service/v2/partner/accounts/' . env('BANK_ACCOUNT_NUMBER') . '/beneficiaries/createLegalAndVirtualAccount',
+            CURLOPT_URL => env('BANK_MAIN_URL') . '/api/nominalaccounts-service/v2/partner/accounts/' . $bankData['BANK_ACCOUNT_NUMBER'] . '/beneficiaries/createLegalAndVirtualAccount',
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_ENCODING => '',
             CURLOPT_MAXREDIRS => 10,
@@ -450,9 +462,10 @@ class PaymentController extends Controller
 
     private function createBeneficearyPersonalProcess(Request $request)
     {
+        $bankData = $this->getBankData();
         $curl = curl_init();
         curl_setopt_array($curl, array(
-            CURLOPT_URL => env('BANK_MAIN_URL') . '/api/nominalaccounts-service/v2/partner/accounts/' . env('BANK_ACCOUNT_NUMBER') . '/beneficiaries/createPhysicalAndVirtualAccount',
+            CURLOPT_URL => env('BANK_MAIN_URL') . '/api/nominalaccounts-service/v2/partner/accounts/' . $bankData['BANK_ACCOUNT_NUMBER'] . '/beneficiaries/createPhysicalAndVirtualAccount',
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_ENCODING => '',
             CURLOPT_MAXREDIRS => 10,
@@ -506,9 +519,10 @@ class PaymentController extends Controller
             $this->authorize();
         }
 
+        $bankData = $this->getBankData();
         $curl = curl_init();
         curl_setopt_array($curl, array(
-            CURLOPT_URL => env('BANK_MAIN_URL') . '/api/nominalaccounts-service/v2/partner/accounts/' . env('BANK_ACCOUNT_NUMBER') . '/beneficiaries/' . $beneficiaryId,
+            CURLOPT_URL => env('BANK_MAIN_URL') . '/api/nominalaccounts-service/v2/partner/accounts/' . $bankData['BANK_ACCOUNT_NUMBER'] . '/beneficiaries/' . $beneficiaryId,
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_ENCODING => '',
             CURLOPT_MAXREDIRS => 10,
@@ -540,9 +554,10 @@ class PaymentController extends Controller
             $this->authorize();
         }
 
+        $bankData = $this->getBankData();
         $curl = curl_init();
         curl_setopt_array($curl, array(
-            CURLOPT_URL => env('BANK_MAIN_URL') . '/api/nominalaccounts-service/v2/partner/accounts/' . env('BANK_ACCOUNT_NUMBER') . '/beneficiaries/' . $beneficiaryId . '/state',
+            CURLOPT_URL => env('BANK_MAIN_URL') . '/api/nominalaccounts-service/v2/partner/accounts/' . $bankData['BANK_ACCOUNT_NUMBER'] . '/beneficiaries/' . $beneficiaryId . '/state',
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_ENCODING => '',
             CURLOPT_MAXREDIRS => 10,
@@ -581,10 +596,11 @@ class PaymentController extends Controller
             $this->authorize();
         }
 
+        $bankData = $this->getBankData();
         $curl = curl_init();
 
         curl_setopt_array($curl, array(
-            CURLOPT_URL => env('BANK_MAIN_URL') . '/api/nominalaccounts-service/v2/partner/accounts/' . env('BANK_ACCOUNT_NUMBER') . '/payments?PerPage=10&Filters.IsIdentified=false',
+            CURLOPT_URL => env('BANK_MAIN_URL') . '/api/nominalaccounts-service/v2/partner/accounts/' . $bankData['BANK_ACCOUNT_NUMBER'] . '/payments?PerPage=10&Filters.IsIdentified=false',
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_ENCODING => '',
             CURLOPT_MAXREDIRS => 10,
@@ -614,10 +630,11 @@ class PaymentController extends Controller
             $this->authorize();
         }
 
+        $bankData = $this->getBankData();
         $curl = curl_init();
 
         curl_setopt_array($curl, array(
-            CURLOPT_URL => env('BANK_MAIN_URL') . '/api/nominalaccounts-service/v2/partner/accounts/' . env('BANK_ACCOUNT_NUMBER') . '/payments/' . $identificationNumber,
+            CURLOPT_URL => env('BANK_MAIN_URL') . '/api/nominalaccounts-service/v2/partner/accounts/' . $bankData['BANK_ACCOUNT_NUMBER'] . '/payments/' . $identificationNumber,
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_ENCODING => '',
             CURLOPT_MAXREDIRS => 10,
@@ -646,10 +663,11 @@ class PaymentController extends Controller
             $this->authorize();
         }
 
+        $bankData = $this->getBankData();
         $curl = curl_init();
 
         curl_setopt_array($curl, array(
-            CURLOPT_URL => env('BANK_MAIN_URL') . '/api/nominalaccounts-service/v2/partner/accounts/' . env('BANK_ACCOUNT_NUMBER') . '/payments/' . $identificationNumber . '/identification',
+            CURLOPT_URL => env('BANK_MAIN_URL') . '/api/nominalaccounts-service/v2/partner/accounts/' . $bankData['BANK_ACCOUNT_NUMBER'] . '/payments/' . $identificationNumber . '/identification',
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_ENCODING => '',
             CURLOPT_MAXREDIRS => 10,
@@ -697,5 +715,9 @@ class PaymentController extends Controller
         return redirect()->route('home');
     }
 
-
+    private function getBankData()
+    {
+        $user = Auth::user();
+        return json_decode(base64_decode($user->bank_data), true);
+    }
 }
