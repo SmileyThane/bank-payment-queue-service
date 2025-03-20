@@ -83,5 +83,13 @@ class UploadController extends Controller
 
         return view('home', compact('balance', 'uploads', 'accounts', 'beneficiaries'));
     }
+
+    final public function destroy(Request $request, int $id): RedirectResponse
+    {
+        $upload = Upload::query()->find($id);
+        $upload->delete();
+
+        return back()->with('success', 'Реестп удален успешно.');
+    }
 }
 

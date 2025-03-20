@@ -9,6 +9,7 @@ use App\Http\Controllers\UploadController;
 Route::middleware('auth')->group(function () {
     Route::get('/', [UploadController::class, 'index'])->name('home');
     Route::post('/upload', [UploadController::class, 'uploadFile'])->name('upload');
+    Route::get('/upload/{id}/delete', [UploadController::class, 'destroy'])->name('deleteClients');
     Route::get('/upload/{hash}', [ClientController::class, 'showByHash'])->name('clients');
     Route::get('/upload/{hash}/pay', [PaymentController::class, 'initDeals'])->name('initDeals');
     Route::get('/upload/{hash}/pay/process', [PaymentController::class, 'initPaymentProcess'])->name('initPaymentProcess');
