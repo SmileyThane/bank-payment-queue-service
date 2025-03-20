@@ -32,6 +32,7 @@ class UploadController extends Controller
             'beneficiary_id' => $virtualAccount['beneficiaryId'],
             'virtual_account_id' => $virtualAccount['accountNumber'],
             'reference_id' => $referenceId,
+            'user_id' => auth()->id(),
         ]);
 
         foreach ($data[0] as $key => $row) {
@@ -62,7 +63,7 @@ class UploadController extends Controller
     final public function index(): View
     {
         $paymentController = new PaymentController();
-        $uploads = Upload::query()->orderByDesc('id')->get();
+        $uploads = Upload::query()->where('user_id', '=', auth()->id())->orderByDesc('id')->get();
         $balance = $paymentController->getActualBalance();
         $accounts = $paymentController->getVirtualAccountsList();
         $beneficiaries = [];
