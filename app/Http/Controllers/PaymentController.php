@@ -716,7 +716,7 @@ class PaymentController extends Controller
         return redirect()->route('home');
     }
 
-    private function getBankData($userId)
+    private function getBankData($userId = null)
     {
         $user = User::query()->find($userId) ?? Auth::user();
         return json_decode(base64_decode($user->bank_data), true);
