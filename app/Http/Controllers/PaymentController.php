@@ -6,6 +6,7 @@ use App\Jobs\CreatePaymentInitiationJob;
 use App\Jobs\CreatePaymentProcessJob;
 use App\Models\Client;
 use App\Models\Upload;
+use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -135,7 +136,7 @@ class PaymentController extends Controller
         $upload = Upload::query()->where('hash', $hash)->firstOrFail();
         if ($upload) {
             $clients = Client::query()->where('upload_id', $upload->id)->get();
-            CreatePaymentInitiationJob::dispatch($upload, $clients, $upload->virtual_account_id, $request->payment_comment);
+            CreatePaymentInitiationJob::dispatch(Auth::id(), $upload, $clients, $upload->virtual_account_id, $request->payment_comment);
             $upload->is_executed = 1;
             $upload->save();
         }
@@ -148,7 +149,7 @@ class PaymentController extends Controller
         $upload = Upload::query()->where('hash', $hash)->firstOrFail();
         if ($upload) {
             $clients = Client::query()->where('upload_id', $upload->id)->get();
-            CreatePaymentProcessJob::dispatch($clients);
+            CreatePaymentProcessJob::dispatch(Auth::id(), $clients);
             $upload->is_processed = 1;
             $upload->save();
         }
@@ -157,7 +158,7 @@ class PaymentController extends Controller
 
     }
 
-    public function initPayment($upload, $clients, string $virtualAccountId, $paymentComment = null): void
+    public function initPayment(int $userId, $upload, $clients, string $virtualAccountId, $paymentComment = null): void
     {
         foreach ($clients as $client) {
             if (!$client->deal_id) {
@@ -167,7 +168,7 @@ class PaymentController extends Controller
                 Log::info('Process initiated: client ID: ' . $client->id . '; Upload ID: ' . $client->upload_id . '; Deal ID: ' . $client->deal_id . ';');
 
                 $purpose = ($paymentComment ?? 'Отправка на карту. ') . $client->name . ' ' . $client->surname;
-                $dealId = $this->createPayment($client->id, $client->deal_id, $virtualAccountId, $client->card_number, $client->amount, $purpose);
+                $dealId = $this->createPayment($userId, $client->id, $client->deal_id, $virtualAccountId, $client->card_number, $client->amount, $purpose);
                 if ($dealId) {
                     $client->status = Client::STATUSES[1];
                     $client->save();
@@ -182,13 +183,13 @@ class PaymentController extends Controller
     /**
      * @throws JsonException
      */
-    private function createPayment(int $id, string $dealId, string $virtualAccountId, string $cardNumber, float $amount, string $purpose = ''): string|null
+    private function createPayment(int $userId, int $id, string $dealId, string $virtualAccountId, string $cardNumber, float $amount, string $purpose = ''): string|null
     {
         if (!Cache::has('access_token')) {
             $this->authorize();
         }
 
-        $bankData = $this->getBankData();
+        $bankData = $this->getBankData($userId);
         $curl = curl_init();
 
         curl_setopt_array($curl, [
@@ -259,13 +260,13 @@ class PaymentController extends Controller
         }
     }
 
-    public function processPayment(int $clientId, string $dealId): void
+    public function processPayment(int $userId, int $clientId, string $dealId): void
     {
         if (!Cache::has('access_token')) {
             $this->authorize();
         }
 
-        $bankData = $this->getBankData();
+        $bankData = $this->getBankData($userId);
         $curl = curl_init();
         curl_setopt_array($curl, array(
             CURLOPT_URL => env('BANK_MAIN_URL') . '/api/nominalaccounts-service/v2/partner/accounts/' . $bankData['BANK_ACCOUNT_NUMBER'] . '/deals/' . $dealId . '/execute',
@@ -715,9 +716,9 @@ class PaymentController extends Controller
         return redirect()->route('home');
     }
 
-    private function getBankData()
+    private function getBankData($userId)
     {
-        $user = Auth::user();
+        $user = User::query()->find($userId) ?? Auth::user();
         return json_decode(base64_decode($user->bank_data), true);
     }
 }
