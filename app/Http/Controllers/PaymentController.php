@@ -308,8 +308,8 @@ class PaymentController extends Controller
     public function checkBulkPaymentStatuses(): void
     {
         $clients = Client::query()
-            ->where('status', Client::STATUSES[3])
-            ->orWhere('status', Client::STATUSES[4])
+            ->where('deal_id', '!=', null)
+            ->whereIn('status', [Client::STATUSES[3],Client::STATUSES[4]])
             ->get();
 
         foreach ($clients as $client) {
