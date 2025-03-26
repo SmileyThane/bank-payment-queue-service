@@ -172,10 +172,12 @@
                                                    class="bg-blue-500 text-white px-3 py-1 rounded-md text-xs font-medium hover:bg-blue-600 focus:outline-none focus:ring focus:ring-blue-300 inline-block">
                                                     <i class="bi bi-eye"></i> Показать клиентов
                                                 </a>
-                                                <a href="{{ route('deleteClients', $upload->id) }}"
-                                                   class=" mt-2 bg-red-600 text-white px-3 py-1 rounded-md text-xs font-medium hover:bg-red-700 focus:outline-none focus:ring focus:ring-blue-300 inline-block">
-                                                    <i class="bi bi-trash"></i> Удалить реестр
-                                                </a>
+                                                @if($upload->is_processed !== 1)
+                                                    <a href="{{ route('deleteClients', $upload->id) }}"
+                                                       class=" mt-2 bg-red-600 text-white px-3 py-1 rounded-md text-xs font-medium hover:bg-red-700 focus:outline-none focus:ring focus:ring-blue-300 inline-block">
+                                                        <i class="bi bi-trash"></i> Удалить реестр
+                                                    </a>
+                                                @endif
                                             </td>
                                         </tr>
                                     @endforeach
