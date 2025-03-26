@@ -313,7 +313,7 @@ class PaymentController extends Controller
             ->get();
 
         foreach ($clients as $client) {
-            $deal = $this->getDeal($client->deal_id);
+            $deal = $this->getDeal($client->upload->user_id, $client->deal_id);
             if ($deal) {
                 $client->status_description = $deal;
                 if ($deal['status'] === 'InProcess') {
@@ -336,14 +336,14 @@ class PaymentController extends Controller
         }
     }
 
-    public function getDeal(string $dealId): array|null
+    public function getDeal(int $userId, string $dealId): array|null
     {
 
         if (!Cache::has('access_token')) {
             $this->authorize();
         }
 
-        $bankData = $this->getBankData();
+        $bankData = $this->getBankData($userId);
         $curl = curl_init();
         curl_setopt_array($curl, array(
             CURLOPT_URL => env('BANK_MAIN_URL') . '/api/nominalaccounts-service/v2/partner/accounts/' . $bankData['BANK_ACCOUNT_NUMBER'] . '/deals/' . $dealId,
