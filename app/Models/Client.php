@@ -62,4 +62,8 @@ class Client extends Model
         ],
     ];
 
+    public function upload()
+    {
+        return $this->belongsTo(Upload::class);
+    }
 }
