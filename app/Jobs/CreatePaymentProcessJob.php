@@ -14,11 +14,14 @@ class CreatePaymentProcessJob implements ShouldQueue
 
     private $clients;
 
+    private $userId;
+
     /**
      * Create a new job instance.
      */
-    public function __construct($clients)
+    public function __construct($userId, $clients)
     {
+        $this->userId = $userId;
         $this->clients = $clients;
     }
 
@@ -28,7 +31,7 @@ class CreatePaymentProcessJob implements ShouldQueue
     public function handle(): void
     {
         foreach ($this->clients as $client) {
-            (new PaymentController())->processPayment($client->id, $client->deal_id);
+            (new PaymentController())->processPayment($this->userId, $client->id, $client->deal_id);
         }
     }
 }

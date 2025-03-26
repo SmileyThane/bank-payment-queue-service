@@ -16,13 +16,16 @@ class CreatePaymentInitiationJob implements ShouldQueue
     private $paymentComment;
     private $upload;
 
+    private $userId;
+
     private string $virtualAccountId;
 
     /**
      * Create a new job instance.
      */
-    public function __construct($upload, $clients, $virtualAccountId, $paymentComment = null)
+    public function __construct($userId, $upload, $clients, $virtualAccountId, $paymentComment = null)
     {
+        $this->userId = $userId;
         $this->upload = $upload;
         $this->clients = $clients;
         $this->paymentComment = $paymentComment;
@@ -34,6 +37,6 @@ class CreatePaymentInitiationJob implements ShouldQueue
      */
     final public function handle(): void
     {
-        (new PaymentController())->initPayment($this->upload, $this->clients, $this->virtualAccountId, $this->paymentComment);
+        (new PaymentController())->initPayment($this->userId, $this->upload, $this->clients, $this->virtualAccountId, $this->paymentComment);
     }
 }
