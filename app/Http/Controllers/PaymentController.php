@@ -25,11 +25,11 @@ class PaymentController extends Controller
     {
         $userId = Auth::id();
         if (!Cache::has('access_token_') . $userId) {
-            $this->authorize();
+            $this->authorize($userId);
         }
 
 
-        $bankData = $this->getBankData();
+        $bankData = $this->getBankData($userId);
         $curl = curl_init();
 
         curl_setopt_array($curl, array(
@@ -61,10 +61,10 @@ class PaymentController extends Controller
     {
         $userId = Auth::id();
         if (!Cache::has('access_token_') . $userId) {
-            $this->authorize();
+            $this->authorize($userId);
         }
 
-        $bankData = $this->getBankData();
+        $bankData = $this->getBankData($userId);
         $curl = curl_init();
 
         curl_setopt_array($curl, array(
@@ -188,7 +188,7 @@ class PaymentController extends Controller
     private function createPayment(int $userId, int $id, string $dealId, string $virtualAccountId, string $cardNumber, float $amount, string $purpose = ''): string|null
     {
         if (!Cache::has('access_token_') . $userId) {
-            $this->authorize();
+            $this->authorize($userId);
         }
 
         $bankData = $this->getBankData($userId);
@@ -265,7 +265,7 @@ class PaymentController extends Controller
     public function processPayment(int $userId, int $clientId, string $dealId): void
     {
         if (!Cache::has('access_token_') . $userId) {
-            $this->authorize();
+            $this->authorize($userId);
         }
 
         $bankData = $this->getBankData($userId);
@@ -408,7 +408,7 @@ class PaymentController extends Controller
     {
         $userId = Auth::id();
         if (!Cache::has('access_token_') . $userId) {
-            $this->authorize();
+            $this->authorize($userId);
         }
 
         if ($request->type === 'business') {
@@ -523,10 +523,10 @@ class PaymentController extends Controller
         $userId = Auth::id();
 
         if (!Cache::has('access_token_') . $userId) {
-            $this->authorize();
+            $this->authorize($userId);
         }
 
-        $bankData = $this->getBankData();
+        $bankData = $this->getBankData($userId);
         $curl = curl_init();
         curl_setopt_array($curl, array(
             CURLOPT_URL => env('BANK_MAIN_URL') . '/api/nominalaccounts-service/v2/partner/accounts/' . $bankData['BANK_ACCOUNT_NUMBER'] . '/beneficiaries/' . $beneficiaryId,
@@ -559,10 +559,10 @@ class PaymentController extends Controller
         $userId = Auth::id();
 
         if (!Cache::has('access_token_') . $userId) {
-            $this->authorize();
+            $this->authorize($userId);
         }
 
-        $bankData = $this->getBankData();
+        $bankData = $this->getBankData($userId);
         $curl = curl_init();
         curl_setopt_array($curl, array(
             CURLOPT_URL => env('BANK_MAIN_URL') . '/api/nominalaccounts-service/v2/partner/accounts/' . $bankData['BANK_ACCOUNT_NUMBER'] . '/beneficiaries/' . $beneficiaryId . '/state',
@@ -603,10 +603,10 @@ class PaymentController extends Controller
         $userId = Auth::id();
 
         if (!Cache::has('access_token_') . $userId) {
-            $this->authorize();
+            $this->authorize($userId);
         }
 
-        $bankData = $this->getBankData();
+        $bankData = $this->getBankData($userId);
         $curl = curl_init();
 
         curl_setopt_array($curl, array(
@@ -639,10 +639,10 @@ class PaymentController extends Controller
         $userId = Auth::id();
 
         if (!Cache::has('access_token_') . $userId) {
-            $this->authorize();
+            $this->authorize($userId);
         }
 
-        $bankData = $this->getBankData();
+        $bankData = $this->getBankData($userId);
         $curl = curl_init();
 
         curl_setopt_array($curl, array(
@@ -673,10 +673,10 @@ class PaymentController extends Controller
     {
         $userId = Auth::id();
         if (!Cache::has('access_token_') . $userId) {
-            $this->authorize();
+            $this->authorize($userId);
         }
 
-        $bankData = $this->getBankData();
+        $bankData = $this->getBankData($userId);
         $curl = curl_init();
 
         curl_setopt_array($curl, array(
