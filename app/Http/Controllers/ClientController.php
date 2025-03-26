@@ -23,13 +23,24 @@ class ClientController extends Controller
         $isProcessed = $upload->is_processed;
         $clientsQuery = Client::query()->where('upload_id', $id);
         if ($search = $request->search) {
-            $clientsQuery->where(static function ($query) use ($search) {
-                $query->orWhere('name', 'like', '%' . $search . '%');
-                $query->orWhere('surname', 'like', '%' . $search . '%');
-                $query->orWhere('patronymic', 'like', '%' . $search . '%');
-                $query->orWhere('card_number', 'like', '%' . $search . '%');
-                $query->orWhere('amount', 'like', '%' . $search . '%');
-            });
+            $statusSearch = null;
+            foreach (Client::STATUSES as $key => $status) {
+                if ($status['text'] === $search) {
+                    $statusSearch = $key;
+                }
+            }
+
+            if ($statusSearch) {
+                $clientsQuery->where('status', $statusSearch);
+            } else {
+                $clientsQuery->where(static function ($query) use ($search) {
+                    $query->orWhere('name', 'like', '%' . $search . '%');
+                    $query->orWhere('surname', 'like', '%' . $search . '%');
+                    $query->orWhere('patronymic', 'like', '%' . $search . '%');
+                    $query->orWhere('card_number', 'like', '%' . $search . '%');
+                    $query->orWhere('amount', 'like', '%' . $search . '%');
+                });
+            }
         }
         $clients = $clientsQuery->get();
         $processedClientsCount = Client::query()->where('upload_id', $id)->where('status', '=', Client::STATUSES[5])->count();
