@@ -67,7 +67,6 @@ class PaymentController extends Controller
         $bankData = $this->getBankData($userId);
         $curl = curl_init();
 
-        dd(env('BANK_MAIN_URL') . '/api/nominalaccounts-service/v2/partner/accounts/' . $bankData['BANK_ACCOUNT_NUMBER'] . '/beneficiaries/' . $beneficiaryId . '/virtual-accounts/' . $virtualAccountId);
         curl_setopt_array($curl, array(
             CURLOPT_URL => env('BANK_MAIN_URL') . '/api/nominalaccounts-service/v2/partner/accounts/' . $bankData['BANK_ACCOUNT_NUMBER'] . '/beneficiaries/' . $beneficiaryId . '/virtual-accounts/' . $virtualAccountId,
             CURLOPT_RETURNTRANSFER => true,
