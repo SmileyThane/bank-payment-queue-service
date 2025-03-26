@@ -24,7 +24,7 @@ class PaymentController extends Controller
     final public function getActualBalance(): float
     {
         $userId = Auth::id();
-        if (!Cache::has('access_token_') . $userId) {
+        if (!Cache::has('access_token_' . $userId)) {
             $this->authorize($userId);
         }
 
@@ -42,7 +42,7 @@ class PaymentController extends Controller
             CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
             CURLOPT_CUSTOMREQUEST => 'GET',
             CURLOPT_HTTPHEADER => array(
-                'Authorization: Bearer ' . Cache::get('access_token_') . $userId
+                'Authorization: Bearer ' . Cache::has('access_token_' . $userId)
             ),
         ));
 
@@ -60,13 +60,14 @@ class PaymentController extends Controller
     final public function getVirtualActualBalance(string $beneficiaryId, string $virtualAccountId): float
     {
         $userId = Auth::id();
-        if (!Cache::has('access_token_') . $userId) {
+        if (!Cache::has('access_token_' . $userId)) {
             $this->authorize($userId);
         }
 
         $bankData = $this->getBankData($userId);
         $curl = curl_init();
 
+        dd(env('BANK_MAIN_URL') . '/api/nominalaccounts-service/v2/partner/accounts/' . $bankData['BANK_ACCOUNT_NUMBER'] . '/beneficiaries/' . $beneficiaryId . '/virtual-accounts/' . $virtualAccountId);
         curl_setopt_array($curl, array(
             CURLOPT_URL => env('BANK_MAIN_URL') . '/api/nominalaccounts-service/v2/partner/accounts/' . $bankData['BANK_ACCOUNT_NUMBER'] . '/beneficiaries/' . $beneficiaryId . '/virtual-accounts/' . $virtualAccountId,
             CURLOPT_RETURNTRANSFER => true,
@@ -77,7 +78,7 @@ class PaymentController extends Controller
             CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
             CURLOPT_CUSTOMREQUEST => 'GET',
             CURLOPT_HTTPHEADER => array(
-                'Authorization: Bearer ' . Cache::get('access_token_') . $userId
+                'Authorization: Bearer ' . Cache::has('access_token_' . $userId)
             ),
         ));
 
@@ -187,7 +188,7 @@ class PaymentController extends Controller
      */
     private function createPayment(int $userId, int $id, string $dealId, string $virtualAccountId, string $cardNumber, float $amount, string $purpose = ''): string|null
     {
-        if (!Cache::has('access_token_') . $userId) {
+        if (!Cache::has('access_token_' . $userId)) {
             $this->authorize($userId);
         }
 
@@ -225,7 +226,7 @@ class PaymentController extends Controller
                                     }',
             CURLOPT_HTTPHEADER => [
                 'Content-Type: application/json',
-                'Authorization: Bearer ' . Cache::get('access_token_') . $userId
+                'Authorization: Bearer ' . Cache::has('access_token_' . $userId)
             ],
         ]);
 
@@ -264,7 +265,7 @@ class PaymentController extends Controller
 
     public function processPayment(int $userId, int $clientId, string $dealId): void
     {
-        if (!Cache::has('access_token_') . $userId) {
+        if (!Cache::has('access_token_' . $userId)) {
             $this->authorize($userId);
         }
 
@@ -280,7 +281,7 @@ class PaymentController extends Controller
             CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
             CURLOPT_CUSTOMREQUEST => 'POST',
             CURLOPT_HTTPHEADER => array(
-                'Authorization: Bearer ' . Cache::get('access_token_') . $userId
+                'Authorization: Bearer ' . Cache::has('access_token_' . $userId)
             ),
         ));
 
@@ -341,7 +342,7 @@ class PaymentController extends Controller
     public function getDeal(int $userId, string $dealId): array|null
     {
 
-        if (!Cache::has('access_token_') . $userId) {
+        if (!Cache::has('access_token_' . $userId)) {
             $this->authorize($userId);
         }
 
@@ -357,7 +358,7 @@ class PaymentController extends Controller
             CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
             CURLOPT_CUSTOMREQUEST => 'GET',
             CURLOPT_HTTPHEADER => array(
-                'Authorization: Bearer ' . Cache::get('access_token_') . $userId
+                'Authorization: Bearer ' . Cache::has('access_token_' . $userId)
             ),
         ));
 
@@ -374,7 +375,7 @@ class PaymentController extends Controller
     public function getVirtualAccountsList()
     {
         $userId = Auth::id();
-        if (!Cache::has('access_token_') . $userId) {
+        if (!Cache::has('access_token_' . $userId)) {
             $this->authorize();
         }
 
@@ -390,7 +391,7 @@ class PaymentController extends Controller
             CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
             CURLOPT_CUSTOMREQUEST => 'GET',
             CURLOPT_HTTPHEADER => array(
-                'Authorization: Bearer ' . Cache::get('access_token_') . $userId
+                'Authorization: Bearer ' . Cache::has('access_token_' . $userId)
             ),
         ));
 
@@ -407,7 +408,7 @@ class PaymentController extends Controller
     public function createBeneficiary(Request $request)
     {
         $userId = Auth::id();
-        if (!Cache::has('access_token_') . $userId) {
+        if (!Cache::has('access_token_' . $userId)) {
             $this->authorize($userId);
         }
 
@@ -454,7 +455,7 @@ class PaymentController extends Controller
             CURLOPT_POSTFIELDS => $jsonString,
             CURLOPT_HTTPHEADER => array(
                 'Content-Type: application/json',
-                'Authorization: Bearer ' . Cache::get('access_token_') . $userId
+                'Authorization: Bearer ' . Cache::has('access_token_' . $userId)
             ),
         ));
 
@@ -501,7 +502,7 @@ class PaymentController extends Controller
                                     }',
             CURLOPT_HTTPHEADER => array(
                 'Content-Type: application/json',
-                'Authorization: Bearer ' . Cache::get('access_token_') . $userId
+                'Authorization: Bearer ' . Cache::has('access_token_' . $userId)
             ),
         ));
 
@@ -522,7 +523,7 @@ class PaymentController extends Controller
         $beneficiary = [];
         $userId = Auth::id();
 
-        if (!Cache::has('access_token_') . $userId) {
+        if (!Cache::has('access_token_' . $userId)) {
             $this->authorize($userId);
         }
 
@@ -538,7 +539,7 @@ class PaymentController extends Controller
             CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
             CURLOPT_CUSTOMREQUEST => 'GET',
             CURLOPT_HTTPHEADER => array(
-                'Authorization: Bearer ' . Cache::get('access_token_') . $userId
+                'Authorization: Bearer ' . Cache::has('access_token_' . $userId)
             ),
         ));
 
@@ -558,7 +559,7 @@ class PaymentController extends Controller
     {
         $userId = Auth::id();
 
-        if (!Cache::has('access_token_') . $userId) {
+        if (!Cache::has('access_token_' . $userId)) {
             $this->authorize($userId);
         }
 
@@ -578,7 +579,7 @@ class PaymentController extends Controller
                                     }',
             CURLOPT_HTTPHEADER => array(
                 'Content-Type: application/json',
-                'Authorization: Bearer ' . Cache::get('access_token_') . $userId
+                'Authorization: Bearer ' . Cache::has('access_token_' . $userId)
             ),
         ));
 
@@ -602,7 +603,7 @@ class PaymentController extends Controller
     {
         $userId = Auth::id();
 
-        if (!Cache::has('access_token_') . $userId) {
+        if (!Cache::has('access_token_' . $userId)) {
             $this->authorize($userId);
         }
 
@@ -619,7 +620,7 @@ class PaymentController extends Controller
             CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
             CURLOPT_CUSTOMREQUEST => 'GET',
             CURLOPT_HTTPHEADER => array(
-                'Authorization: Bearer ' . Cache::get('access_token_') . $userId
+                'Authorization: Bearer ' . Cache::has('access_token_' . $userId)
             ),
         ));
 
@@ -638,7 +639,7 @@ class PaymentController extends Controller
     {
         $userId = Auth::id();
 
-        if (!Cache::has('access_token_') . $userId) {
+        if (!Cache::has('access_token_' . $userId)) {
             $this->authorize($userId);
         }
 
@@ -655,7 +656,7 @@ class PaymentController extends Controller
             CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
             CURLOPT_CUSTOMREQUEST => 'GET',
             CURLOPT_HTTPHEADER => array(
-                'Authorization: Bearer ' . Cache::get('access_token_') . $userId
+                'Authorization: Bearer ' . Cache::has('access_token_' . $userId)
             ),
         ));
 
@@ -672,7 +673,7 @@ class PaymentController extends Controller
     public function paymentIdentificationProcess(string $identificationNumber, string $virtualAccountNumber, float $amount)
     {
         $userId = Auth::id();
-        if (!Cache::has('access_token_') . $userId) {
+        if (!Cache::has('access_token_' . $userId)) {
             $this->authorize($userId);
         }
 
@@ -699,7 +700,7 @@ class PaymentController extends Controller
                                    }',
             CURLOPT_HTTPHEADER => array(
                 'Content-Type: application/json',
-                'Authorization: Bearer ' . Cache::get('access_token_') . $userId
+                'Authorization: Bearer ' . Cache::has('access_token_' . $userId)
             ),
         ));
 
