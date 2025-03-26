@@ -42,7 +42,7 @@ class PaymentController extends Controller
             CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
             CURLOPT_CUSTOMREQUEST => 'GET',
             CURLOPT_HTTPHEADER => array(
-                'Authorization: Bearer ' . Cache::has('access_token_' . $userId)
+                'Authorization: Bearer ' . Cache::get('access_token_' . $userId)
             ),
         ));
 
@@ -77,7 +77,7 @@ class PaymentController extends Controller
             CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
             CURLOPT_CUSTOMREQUEST => 'GET',
             CURLOPT_HTTPHEADER => array(
-                'Authorization: Bearer ' . Cache::has('access_token_' . $userId)
+                'Authorization: Bearer ' . Cache::get('access_token_' . $userId)
             ),
         ));
 
@@ -225,7 +225,7 @@ class PaymentController extends Controller
                                     }',
             CURLOPT_HTTPHEADER => [
                 'Content-Type: application/json',
-                'Authorization: Bearer ' . Cache::has('access_token_' . $userId)
+                'Authorization: Bearer ' . Cache::get('access_token_' . $userId)
             ],
         ]);
 
@@ -280,7 +280,7 @@ class PaymentController extends Controller
             CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
             CURLOPT_CUSTOMREQUEST => 'POST',
             CURLOPT_HTTPHEADER => array(
-                'Authorization: Bearer ' . Cache::has('access_token_' . $userId)
+                'Authorization: Bearer ' . Cache::get('access_token_' . $userId)
             ),
         ));
 
@@ -357,7 +357,7 @@ class PaymentController extends Controller
             CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
             CURLOPT_CUSTOMREQUEST => 'GET',
             CURLOPT_HTTPHEADER => array(
-                'Authorization: Bearer ' . Cache::has('access_token_' . $userId)
+                'Authorization: Bearer ' . Cache::get('access_token_' . $userId)
             ),
         ));
 
@@ -390,7 +390,7 @@ class PaymentController extends Controller
             CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
             CURLOPT_CUSTOMREQUEST => 'GET',
             CURLOPT_HTTPHEADER => array(
-                'Authorization: Bearer ' . Cache::has('access_token_' . $userId)
+                'Authorization: Bearer ' . Cache::get('access_token_' . $userId)
             ),
         ));
 
@@ -454,7 +454,7 @@ class PaymentController extends Controller
             CURLOPT_POSTFIELDS => $jsonString,
             CURLOPT_HTTPHEADER => array(
                 'Content-Type: application/json',
-                'Authorization: Bearer ' . Cache::has('access_token_' . $userId)
+                'Authorization: Bearer ' . Cache::get('access_token_' . $userId)
             ),
         ));
 
@@ -501,7 +501,7 @@ class PaymentController extends Controller
                                     }',
             CURLOPT_HTTPHEADER => array(
                 'Content-Type: application/json',
-                'Authorization: Bearer ' . Cache::has('access_token_' . $userId)
+                'Authorization: Bearer ' . Cache::get('access_token_' . $userId)
             ),
         ));
 
@@ -538,7 +538,7 @@ class PaymentController extends Controller
             CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
             CURLOPT_CUSTOMREQUEST => 'GET',
             CURLOPT_HTTPHEADER => array(
-                'Authorization: Bearer ' . Cache::has('access_token_' . $userId)
+                'Authorization: Bearer ' . Cache::get('access_token_' . $userId)
             ),
         ));
 
@@ -578,7 +578,7 @@ class PaymentController extends Controller
                                     }',
             CURLOPT_HTTPHEADER => array(
                 'Content-Type: application/json',
-                'Authorization: Bearer ' . Cache::has('access_token_' . $userId)
+                'Authorization: Bearer ' . Cache::get('access_token_' . $userId)
             ),
         ));
 
@@ -619,7 +619,7 @@ class PaymentController extends Controller
             CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
             CURLOPT_CUSTOMREQUEST => 'GET',
             CURLOPT_HTTPHEADER => array(
-                'Authorization: Bearer ' . Cache::has('access_token_' . $userId)
+                'Authorization: Bearer ' . Cache::get('access_token_' . $userId)
             ),
         ));
 
@@ -655,7 +655,7 @@ class PaymentController extends Controller
             CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
             CURLOPT_CUSTOMREQUEST => 'GET',
             CURLOPT_HTTPHEADER => array(
-                'Authorization: Bearer ' . Cache::has('access_token_' . $userId)
+                'Authorization: Bearer ' . Cache::get('access_token_' . $userId)
             ),
         ));
 
@@ -699,7 +699,7 @@ class PaymentController extends Controller
                                    }',
             CURLOPT_HTTPHEADER => array(
                 'Content-Type: application/json',
-                'Authorization: Bearer ' . Cache::has('access_token_' . $userId)
+                'Authorization: Bearer ' . Cache::get('access_token_' . $userId)
             ),
         ));
 
