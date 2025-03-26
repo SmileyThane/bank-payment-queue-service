@@ -24,8 +24,8 @@ class ClientController extends Controller
         $clientsQuery = Client::query()->where('upload_id', $id);
         if ($search = $request->search) {
             $statusSearch = null;
-            foreach (Client::STATUSES as $key => $status) {
-                if ($status['text'] === $search) {
+            foreach (Client::STATUS_MESSAGES as $key => $status) {
+                if ($status['text'] === trim($search)) {
                     $statusSearch = $key;
                 }
             }
