@@ -93,11 +93,11 @@ class PaymentController extends Controller
     /**
      * @throws JsonException
      */
-    final public function authorize(): void
+    final public function authorize(int $userId = null): void
     {
         $curl = curl_init();
 
-        $bankData = $this->getBankData();
+        $bankData = $this->getBankData($userId);
         $bankClient = $bankData['BANK_CLIENT'];
         $bankSecret = $bankData['BANK_SECRET'];
 
@@ -340,7 +340,7 @@ class PaymentController extends Controller
     {
 
         if (!Cache::has('access_token')) {
-            $this->authorize();
+            $this->authorize($userId);
         }
 
         $bankData = $this->getBankData($userId);
