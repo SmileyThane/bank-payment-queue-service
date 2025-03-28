@@ -150,7 +150,10 @@ class PaymentController extends Controller
     {
         $upload = Upload::query()->where('hash', $hash)->firstOrFail();
         if ($upload) {
-            $clients = Client::query()->where('upload_id', $upload->id)->get();
+            $clients = Client::query()
+                ->where('upload_id', '=', $upload->id)
+                ->where('status', '=', Client::STATUSES[1])
+                ->get();
             CreatePaymentProcessJob::dispatch(Auth::id(), $clients);
             $upload->is_processed = 1;
             $upload->save();
