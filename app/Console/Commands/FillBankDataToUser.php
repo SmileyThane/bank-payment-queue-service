@@ -34,12 +34,15 @@ class FillBankDataToUser extends Command
         $clientID = $this->ask('Enter Client ID?');
         $clientSecret = $this->ask('Enter Client Secret?');
         $bankAccount = $this->ask('Enter Client Bank Account?');
+        $ip = $this->ask('Enter Client IP Address?');
 
         $user->bank_data = base64_encode(json_encode([
             'BANK_CLIENT' => $clientID,
             'BANK_SECRET' => $clientSecret,
             'BANK_ACCOUNT_NUMBER' => $bankAccount,
         ]));
+
+        $user->ip_address = $ip;
 
         $user->save();
         $this->info('USER ID: ' . $user->id . ' UPDATED');
