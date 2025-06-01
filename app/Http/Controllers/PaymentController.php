@@ -736,4 +736,20 @@ class PaymentController extends Controller
         $user = User::query()->find($userId) ?? Auth::user();
         return json_decode(base64_decode($user->bank_data), true);
     }
+
+    private function getLocalIps(): array {
+        $output = shell_exec("ip -o -4 addr show | awk '{print $4}'");
+        $lines = explode("\n", trim($output));
+        return array_map(static fn($cidr) => explode('/', $cidr)[0], $lines);
+    }
+    private function prepareUserIp($userId = null):null|string
+    {
+        $user = User::query()->find($userId) ?? Auth::user();
+
+        if ($user) {
+            return in_array($user->ip_address, $this->getLocalIps()) ? $user->ip_address : null;
+        }
+
+        return null;
+    }
 }
