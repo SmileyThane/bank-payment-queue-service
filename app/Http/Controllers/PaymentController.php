@@ -46,6 +46,10 @@ class PaymentController extends Controller
             ),
         ));
 
+        if ($ip = $this->prepareUserIp()) {
+            curl_setopt($curl, CURLOPT_INTERFACE, $ip);
+        }
+
         $response = curl_exec($curl);
 
         $result = json_decode($response, true);
@@ -80,6 +84,10 @@ class PaymentController extends Controller
                 'Authorization: Bearer ' . Cache::get('access_token_' . $userId)
             ),
         ));
+
+        if ($ip = $this->prepareUserIp()) {
+            curl_setopt($curl, CURLOPT_INTERFACE, $ip);
+        }
 
         $response = curl_exec($curl);
 
@@ -117,6 +125,10 @@ class PaymentController extends Controller
                 'Content-Type: application/x-www-form-urlencoded'
             ),
         ));
+
+        if ($ip = $this->prepareUserIp($userId)) {
+            curl_setopt($curl, CURLOPT_INTERFACE, $ip);
+        }
 
         $response = curl_exec($curl);
         curl_close($curl);
