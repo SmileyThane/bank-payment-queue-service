@@ -350,7 +350,10 @@ class PaymentController extends Controller
 
                 }
 
-                if ($deal['status'] === 'Rejected' || $deal['status'] === 'Correction') {
+                if (
+                    $deal['status'] === 'Rejected'
+//                    || $deal['status'] === 'Correction' blocked to make double check
+                ) {
                     $client->status = Client::STATUSES[6];
                 }
             } else {
