@@ -323,7 +323,7 @@ class PaymentController extends Controller
         if ($result && $result['isSuccess'] === false) {
             $this->setPaymentError($clientId, Client::STATUSES[6], $result['error']['message']);
         } else {
-            $this->setPaymentError($clientId, Client::STATUSES[6], null, $response);
+            $this->setPaymentError($clientId, Client::STATUSES[4], null, $response);
         }
     }
 
