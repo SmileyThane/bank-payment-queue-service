@@ -7,6 +7,7 @@ use App\Jobs\CreatePaymentProcessJob;
 use App\Models\Client;
 use App\Models\Upload;
 use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -352,7 +353,7 @@ class PaymentController extends Controller
 
                 if (
                     $deal['status'] === 'Rejected'
-//                    || $deal['status'] === 'Correction' blocked to make double check
+                    || $deal['status'] === 'Correction'
                 ) {
                     $client->status = Client::STATUSES[6];
                 }
@@ -362,6 +363,15 @@ class PaymentController extends Controller
 
             $client->save();
         }
+    }
+
+    public function cancelBrokenPaymentStatuses()
+    {
+        Client::query()
+            ->where('deal_id', '!=', null)
+            ->whereIn('status', [Client::STATUSES[3],Client::STATUSES[4]])
+            ->whereDate('created_at' ,'<', Carbon::now()->subHours(3))
+            ->update(['status' => Client::STATUSES[6]]);
     }
 
     public function getDeal(int $userId, string $dealId): array|null

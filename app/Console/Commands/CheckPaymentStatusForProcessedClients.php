@@ -28,9 +28,14 @@ class CheckPaymentStatusForProcessedClients extends Command
      */
     public function handle()
     {
-        $this->info('Started');
-        (new PaymentController())->checkBulkPaymentStatuses();
-        $this->info('Done');
+        $paymentController = new PaymentController();
+        $this->info('Started Status Checking');
+        $paymentController->checkBulkPaymentStatuses();
+        $this->info('Done Status Checking');
+
+        $this->info('Started Status Updating For Broken');
+        $paymentController->cancelBrokenPaymentStatuses();
+        $this->info('Done Status Updating For Broken');
 
         return 0;
     }
