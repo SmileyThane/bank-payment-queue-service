@@ -808,20 +808,25 @@ class PaymentController extends Controller
 
     private function getPublicIp(): string
     {
-        $client = new \GuzzleHttp\Client();
-        $response = $client->get('https://api.ipify.org?format=json');
-        $result = json_decode($response->getBody());
+        return \request()->ip();
 
-        return $result ? $result->ip : '';
+//        $client = new \GuzzleHttp\Client();
+//        $response = $client->get('https://api.ipify.org?format=json');
+//        $result = json_decode($response->getBody());
+//
+//        return $result ? $result->ip : '';
     }
     private function prepareUserIp($userId = null):null|string
     {
-        $user = User::query()->find($userId) ?? Auth::user();
+        $user = Auth::user();
+        if ($user) {
+            if ($user->ip_address === $this->getPublicIp()) {
+                return $user->ip_address;
+            }
 
-        if ($user && $user->ip_address === $this->getPublicIp()) {
-            return $user->ip_address;
+            return abort(403, 'Ошбика IP адреса. Свяжитесь с системным администратором.');
         }
 
-        return abort(403, 'Ошбика IP адреса. Свяжитесь с системным администратором.');
+        return null;
     }
 }
