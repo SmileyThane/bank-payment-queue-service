@@ -421,7 +421,7 @@ class PaymentController extends Controller
         $bankData = $this->getBankData();
         $curl = curl_init();
         curl_setopt_array($curl, array(
-            CURLOPT_URL => env('BANK_MAIN_URL') . '/api/nominalaccounts-service/v2/partner/accounts/' . $bankData['BANK_ACCOUNT_NUMBER'] . '/virtual-accounts/search?perPage=100',
+            CURLOPT_URL => env('BANK_MAIN_URL') . '/api/nominalaccounts-service/v2/partner/accounts/' . $bankData['BANK_ACCOUNT_NUMBER'] . '/virtual-accounts/search?perPage=1000',
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_ENCODING => '',
             CURLOPT_MAXREDIRS => 10,
