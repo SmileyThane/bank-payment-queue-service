@@ -730,7 +730,7 @@ class PaymentController extends Controller
         $response = curl_exec($curl);
         $result = json_decode($response, true);
 
-        if ($result && $result['isSuccess'] === true && isset($result['value']) && stripos($result['value'], 'ВОЗВРАТ') === false) {
+        if ($result && $result['isSuccess'] === true && isset($result['value'])) {
             return $result['value'];
         }
 

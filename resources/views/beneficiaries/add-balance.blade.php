@@ -9,11 +9,13 @@
         <select class="form-select form-select-md mb-3" name="payment"
                 aria-label=".form-select-lg example" required>
             @foreach($payments as $payment)
+                @if(stripos($payment['paymentPurpose'], 'ВОЗВРАТ') === false)
                 <option
                     value="{{ json_encode($payment) }}"
                 >
                     Назначение: {{$payment['paymentPurpose']}} Сумма платежа: {{ $payment['amount'] }}
                 </option>
+                @endif
             @endforeach
         </select>
 
