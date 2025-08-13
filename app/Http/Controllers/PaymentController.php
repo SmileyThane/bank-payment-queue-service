@@ -335,7 +335,7 @@ class PaymentController extends Controller
     {
         $clients = Client::query()
             ->where('deal_id', '!=', null)
-            ->whereIn('status', [Client::STATUSES[3],Client::STATUSES[4]])
+            ->whereIn('status', [Client::STATUSES[3], Client::STATUSES[4]])
             ->get();
 
         foreach ($clients as $client) {
@@ -369,8 +369,8 @@ class PaymentController extends Controller
     {
         Client::query()
             ->where('deal_id', '!=', null)
-            ->whereIn('status', [Client::STATUSES[3],Client::STATUSES[4]])
-            ->whereDate('created_at' ,'<', Carbon::now()->subHours(3))
+            ->whereIn('status', [Client::STATUSES[3], Client::STATUSES[4]])
+            ->whereDate('created_at', '<', Carbon::now()->subHours(3))
             ->update(['status' => Client::STATUSES[6]]);
     }
 
@@ -670,7 +670,7 @@ class PaymentController extends Controller
         $curl = curl_init();
 
         curl_setopt_array($curl, array(
-            CURLOPT_URL => env('BANK_MAIN_URL') . '/api/nominalaccounts-service/v2/partner/accounts/' . $bankData['BANK_ACCOUNT_NUMBER'] . '/payments?PerPage=10&Filters.IsIdentified=false',
+            CURLOPT_URL => env('BANK_MAIN_URL') . '/api/nominalaccounts-service/v2/partner/accounts/' . $bankData['BANK_ACCOUNT_NUMBER'] . '/payments?PerPage=100&Filters.IsIdentified=false',
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_ENCODING => '',
             CURLOPT_MAXREDIRS => 10,
@@ -816,7 +816,8 @@ class PaymentController extends Controller
 //
 //        return $result ? $result->ip : '';
     }
-    private function prepareUserIp($userId = null):null|string
+
+    private function prepareUserIp($userId = null): null|string
     {
         $user = Auth::user();
         if ($user) {
